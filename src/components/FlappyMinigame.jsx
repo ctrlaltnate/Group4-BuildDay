@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import flappyGameBackground from '../assets/ui/bg_flappygame.jpeg';
-import goldCoin from '../assets/ui/gold_coin_spin_4_angles.gif';
+import obstacleImage from '../assets/obstacles/obstacle.png';
+import collectibleCoin from './ui/rainbow_coin_spin_4_angles_transparent.gif';
 import coinCollectSound from '../assets/soundeffect/coin-collect.wav';
 import obstacleHitSound from '../assets/soundeffect/obstacle-hit.wav';
 import survivalBgm from '../assets/soundeffect/survival-bgm.ogg';
@@ -10,8 +11,12 @@ import useGame from '../hooks/useGame.js';
 import useGameTimer from '../hooks/useGameTimer.js';
 import useSoundEffect from '../hooks/useSoundEffect.js';
 
-const GRAVITY = 88;
-const JUMP_FORCE = -38;
+// Positions are percentages of the play area and velocities are percentage
+// points per second. This gives one press a clear flap without making the
+// character float indefinitely.
+const GRAVITY = 75;
+const JUMP_FORCE = -41;
+const MAX_FALL_SPEED = 58;
 const OBSTACLE_SPEED = 24;
 const BIRD_X = 18;
 const BIRD_WIDTH = 6;
@@ -34,8 +39,10 @@ export default function FlappyMinigame() {
     completeSurvival,
     loseGame,
     setBigCoinVisible,
+    selectedCharacter,
   } = useGame();
   const [birdY, setBirdY] = useState(45);
+  const [birdRotation, setBirdRotation] = useState(0);
   const [obstacleX, setObstacleX] = useState(105);
   const [gapY, setGapY] = useState(50);
   const [coinX, setCoinX] = useState(105);
@@ -68,6 +75,12 @@ export default function FlappyMinigame() {
   const jump = useCallback(() => {
     if (isRunning) velocityRef.current = JUMP_FORCE;
   }, [isRunning]);
+
+  const handleGamePointerDown = useCallback((event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    event.preventDefault();
+    jump();
+  }, [jump]);
 
   const registerHit = useCallback(() => {
     const now = performance.now();
@@ -112,7 +125,10 @@ export default function FlappyMinigame() {
       const delta = Math.min((timestamp - previousFrame) / 1000, 0.04);
       lastFrameRef.current = timestamp;
 
-      velocityRef.current += GRAVITY * delta;
+      velocityRef.current = Math.min(
+        MAX_FALL_SPEED,
+        velocityRef.current + GRAVITY * delta,
+      );
       birdYRef.current += velocityRef.current * delta;
       obstacleXRef.current -= OBSTACLE_SPEED * delta;
 
@@ -194,6 +210,9 @@ export default function FlappyMinigame() {
       }
 
       setBirdY(birdYRef.current);
+      setBirdRotation(
+        Math.min(30, Math.max(-16, velocityRef.current * 0.55)),
+      );
       setObstacleX(obstacleXRef.current);
       setGapY(gapYRef.current);
       animationFrameId = requestAnimationFrame(animate);
@@ -214,22 +233,37 @@ export default function FlappyMinigame() {
 
   return (
     <div
-      className="relative h-full w-full cursor-pointer overflow-hidden bg-cover bg-center bg-no-repeat text-left outline-none"
-      style={{ backgroundImage: `url(${flappyGameBackground})` }}
-      onClick={jump}
+      className="relative h-full w-full touch-none cursor-pointer overflow-hidden bg-sky-300 text-left outline-none"
+      onPointerDown={handleGamePointerDown}
       role="application"
-      aria-label="พื้นที่เล่น Flappy Survival กดเพื่อกระโดด"
+      tabIndex={0}
+      aria-label="Flappy Survival play area. Press to jump."
     >
+      <div
+        className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat opacity-70"
+        style={{ backgroundImage: `url(${flappyGameBackground})` }}
+        aria-hidden="true"
+      />
+
       <div className="absolute inset-x-0 bottom-0 h-[8%] border-t-4 border-black bg-emerald-600" />
 
       <div
-        className={`absolute left-[18%] z-20 grid h-10 w-10 place-items-center border-4 border-black bg-yellow-300 text-xl shadow-[4px_4px_0_#000] transition-colors ${
-          isHit ? 'bg-rose-500' : ''
+        className={`absolute left-[18%] z-20 grid h-14 w-20 place-items-center sm:h-20 sm:w-28 ${
+          isHit ? 'brightness-50 drop-shadow-[0_0_10px_#ef4444]' : 'drop-shadow-[4px_4px_0_#0f172a]'
         }`}
-        style={{ top: `${birdY}%` }}
+        style={{
+          top: `${birdY}%`,
+          transform: `rotate(${birdRotation}deg)`,
+        }}
         aria-hidden="true"
       >
-        ▲
+        {selectedCharacter?.images?.fly ? (
+          <img
+            className="h-full w-full scale-110 object-contain [image-rendering:pixelated]"
+            src={selectedCharacter.images.fly}
+            alt=""
+          />
+        ) : '▲'}
       </div>
 
       <div
@@ -238,13 +272,25 @@ export default function FlappyMinigame() {
         aria-hidden="true"
       >
         <div
-          className="absolute inset-x-0 top-0 border-4 border-black bg-emerald-700 shadow-[4px_0_0_#000]"
+          className="absolute inset-x-0 top-0 overflow-hidden drop-shadow-[4px_0_0_#000]"
           style={{ height: `${gapY - GAP_SIZE / 2}%` }}
-        />
+        >
+          <img
+            src={obstacleImage}
+            alt=""
+            className="h-full w-full -scale-x-100 rotate-180 object-contain object-top [image-rendering:pixelated]"
+          />
+        </div>
         <div
-          className="absolute inset-x-0 bottom-0 border-4 border-black bg-emerald-700 shadow-[4px_0_0_#000]"
+          className="absolute inset-x-0 bottom-0 overflow-hidden drop-shadow-[4px_0_0_#000]"
           style={{ height: `${100 - (gapY + GAP_SIZE / 2)}%` }}
-        />
+        >
+          <img
+            src={obstacleImage}
+            alt=""
+            className="h-full w-full object-contain object-top [image-rendering:pixelated]"
+          />
+        </div>
       </div>
 
       {bigCoinVisible && (
@@ -252,15 +298,16 @@ export default function FlappyMinigame() {
           className="absolute z-30 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-2"
           style={{ left: `${coinX}%`, top: `${coinY}%` }}
           type="button"
+          onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => {
             event.stopPropagation();
             handleCollectCoin();
           }}
-          aria-label="เก็บเหรียญใหญ่ 10 แต้ม"
+          aria-label="Collect a big coin worth 20 coins"
         >
           <img
             className="h-14 w-14 [image-rendering:pixelated] sm:h-20 sm:w-20"
-            src={goldCoin}
+            src={collectibleCoin}
             alt=""
           />
         </button>

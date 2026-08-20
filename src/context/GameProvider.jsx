@@ -5,7 +5,7 @@ import { GameContext } from './GameContext.jsx';
 const INITIAL_HP = 1000;
 const INITIAL_BOSS_HP = 2000;
 const INITIAL_TIME = 60;
-const MAX_SURVIVAL_COINS = 160;
+const MAX_SURVIVAL_COINS = 260;
 
 export default function GameProvider({ children }) {
   const [phase, setPhase] = useState(GAME_PHASES.START);

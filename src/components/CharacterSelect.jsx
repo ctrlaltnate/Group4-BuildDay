@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function CharacterSelect({
   characters = [],
@@ -15,16 +15,16 @@ export default function CharacterSelect({
   };
 
   return (
-    <div className="flex flex-col items-center justify-between h-full w-full p-4 select-none font-mono bg-[#0f380f]/10">
+    <div className="flex h-full w-full select-none flex-col items-center gap-5 overflow-y-auto bg-sky-100/80 p-4 font-mono sm:p-7">
       {/* Title Bar */}
-      <div className="border-2 border-[#0f380f] bg-[#8bac0f] w-full max-w-sm py-2 px-4 text-center rounded shadow-[4px_4px_0px_0px_#0f380f]">
-        <h2 className="text-sm sm:text-base font-extrabold text-[#0f380f] tracking-wider uppercase">
+      <div className="w-full max-w-5xl rounded border-4 border-slate-950 bg-cyan-300 px-5 py-4 text-center shadow-[6px_6px_0_#0f172a]">
+        <h2 className="text-base font-extrabold tracking-wider text-slate-950 uppercase sm:text-2xl">
           SELECT YOUR HERO
         </h2>
       </div>
 
       {/* Character Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 my-3 w-full max-w-sm overflow-y-auto max-h-[180px] p-1">
+      <div className="grid w-full max-w-5xl grid-cols-2 gap-4 p-1 sm:grid-cols-3 lg:grid-cols-5">
         {characters.map((char) => {
           const isSelected = char.id === selectedId;
           const charImage = char.images?.idle || char.image;
@@ -35,29 +35,29 @@ export default function CharacterSelect({
               onClick={() => setSelectedId(char.id)}
               className={`cursor-pointer border-2 p-2 rounded flex flex-col items-center justify-between transition-all ${
                 isSelected
-                  ? "border-[#0f380f] bg-[#8bac0f] scale-105 shadow-[3px_3px_0px_0px_#0f380f]"
-                  : "border-[#306230] bg-[#9bbc0f] hover:bg-[#8bac0f]/50 opacity-80 hover:opacity-100"
+                  ? "border-slate-950 bg-cyan-300 -translate-y-1 shadow-[5px_5px_0_#0f172a]"
+                  : "border-sky-900 bg-sky-200 hover:bg-cyan-200 hover:-translate-y-1"
               }`}
             >
-              <div className="w-10 h-10 flex items-center justify-center bg-[#9bbc0f] border border-[#0f380f] rounded p-1 mb-1">
+              <div className="mb-3 flex h-28 w-full items-center justify-center rounded border-2 border-sky-950 bg-sky-50 p-2 sm:h-36">
                 {charImage ? (
                   <img
                     src={charImage}
                     alt={char.name}
-                    className="w-full h-full object-contain pixelated"
+                    className="h-full w-full object-contain [image-rendering:pixelated]"
                     onError={(e) => {
-                      // Fallback เมื่อหาไฟล์รูปใน assets ไม่เจอ
+                      // Show the fallback when an asset cannot be loaded.
                       e.target.style.display = "none";
                       e.target.nextSibling.style.display = "block";
                     }}
                   />
                 ) : null}
-                <span className="text-xs font-bold text-[#0f380f] hidden">
+                <span className="hidden text-xs font-bold text-sky-950">
                   🎮
                 </span>
               </div>
 
-              <span className="text-[11px] font-black text-[#0f380f] text-center truncate w-full">
+              <span className="w-full truncate text-center text-xs font-black text-slate-950 sm:text-sm">
                 {char.name}
               </span>
             </div>
@@ -66,18 +66,18 @@ export default function CharacterSelect({
       </div>
 
       {/* Description Display Box */}
-      <div className="w-full max-w-sm border-2 border-[#0f380f] bg-[#9bbc0f] p-2 rounded min-h-[60px] mb-2 flex flex-col justify-center">
+      <div className="flex min-h-20 w-full max-w-5xl flex-col justify-center rounded border-4 border-sky-950 bg-sky-200 p-4 shadow-[4px_4px_0_#0c4a6e]">
         {selectedChar ? (
           <>
-            <p className="text-[11px] font-extrabold text-[#0f380f] mb-0.5">
+            <p className="mb-1 text-xl font-extrabold text-sky-950">
               [{selectedChar.name}]
             </p>
-            <p className="text-[10px] text-[#306230] leading-tight font-bold">
+            <p className="text-lg font-bold leading-relaxed text-sky-800">
               {selectedChar.description}
             </p>
           </>
         ) : (
-          <p className="text-[10px] text-[#306230] text-center italic font-bold">
+          <p className="text-center text-xs font-bold italic text-sky-800">
             Click on a character above to view their details.
           </p>
         )}
@@ -87,9 +87,9 @@ export default function CharacterSelect({
       <button
         onClick={handleConfirm}
         disabled={!selectedId}
-        className={`w-full max-w-sm py-2.5 font-mono font-extrabold text-xs border-2 rounded transition-all ${
+        className={`w-full max-w-5xl rounded border-4 py-4 font-mono text-xs font-extrabold transition-all sm:text-sm ${
           selectedId
-            ? "bg-[#306230] hover:bg-[#0f380f] text-[#9bbc0f] border-[#0f380f] shadow-[3px_3px_0px_0px_#0f380f] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+            ? "cursor-pointer border-slate-950 bg-blue-600 text-white shadow-[5px_5px_0_#0f172a] hover:bg-blue-700 active:translate-x-1 active:translate-y-1 active:shadow-none"
             : "bg-gray-400 text-gray-200 border-gray-500 cursor-not-allowed opacity-60"
         }`}
       >

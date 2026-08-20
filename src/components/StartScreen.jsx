@@ -1,16 +1,14 @@
-import React from "react";
-
 export default function StartScreen({ onStart }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full p-4 text-center select-none bg-[#0f380f]/10">
-      {/* Dialogue Box กรอบสไตล์ Retro GameBoy */}
-      <div className="border-4 border-[#0f380f] bg-[#9bbc0f] p-6 rounded-lg shadow-[8px_8px_0px_0px_rgba(15,56,15,0.8)] max-w-sm w-full flex flex-col items-center gap-4">
+    <div className="flex h-full w-full select-none flex-col items-center justify-center bg-sky-100/80 p-4 text-center">
+      {/* Retro Game Boy-style dialog box */}
+      <div className="flex w-full max-w-lg flex-col items-center gap-4 rounded-lg border-4 border-slate-950 bg-sky-200 p-7 shadow-[8px_8px_0_#0f172a]">
         {/* Header Text */}
-        <div className="border-2 border-[#0f380f] bg-[#8bac0f] px-4 py-2 rounded w-full">
-          <h1 className="text-xl sm:text-2xl font-black text-[#0f380f] tracking-widest uppercase font-mono">
+        <div className="w-full rounded border-2 border-sky-950 bg-cyan-300 px-4 py-3">
+          <h1 className="font-mono text-xl font-black tracking-widest text-slate-950 uppercase sm:text-3xl">
             FLAPPY BOSS
           </h1>
-          <p className="text-[10px] sm:text-xs font-bold text-[#306230] font-mono mt-1 tracking-wider">
+          <p className="mt-2 font-mono text-[10px] font-bold tracking-wider text-sky-900 sm:text-xs">
             SURVIVAL BUILD DAY
           </p>
         </div>
@@ -18,7 +16,7 @@ export default function StartScreen({ onStart }) {
         {/* Start Button */}
         <button
           onClick={onStart}
-          className="mt-2 w-full py-3 bg-[#306230] hover:bg-[#0f380f] text-[#9bbc0f] font-mono font-extrabold text-lg border-2 border-[#0f380f] rounded shadow-[4px_4px_0px_0px_#0f380f] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+          className="mt-2 w-full cursor-pointer rounded border-4 border-slate-950 bg-blue-600 py-4 font-mono text-lg font-extrabold text-white shadow-[5px_5px_0_#0f172a] transition-all hover:bg-blue-700 active:translate-x-1 active:translate-y-1 active:shadow-none"
         >
           [ START GAME ]
         </button>

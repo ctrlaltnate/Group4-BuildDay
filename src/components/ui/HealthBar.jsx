@@ -1,24 +1,4 @@
-import React from 'react';
 
-export default function HealthBar({ currentHp, maxHp, label, variant = 'player' }) {
-  const percentage = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
-  const barColor = variant === 'player' ? 'bg-green-500' : 'bg-red-500';
-
-return (
-    <div className="w-full my-2 p-2 border border-dashed border-gray-400 rounded-lg">
-      <div className="flex justify-between text-sm mb-1">
-        <span>{label || 'Mock Label'}</span>
-        <span>{currentHp !== undefined ? currentHp : 500} / {maxHp !== undefined ? maxHp : 1000}</span>
-      </div>
-      <div className="w-full h-5 bg-gray-700 rounded-full overflow-hidden">
-        {/* Fix ความกว้างของหลอดเลือดไว้ที่ 50% ชั่วคราว */}
-        <div className="h-full bg-green-500 w-1/2"></div>
-      </div>
-      <p className="text-xs text-yellow-400 text-center mt-2">
-      </p>
-    </div>
-  );
-}
 const HEART_PATH =
   'M0 1H1V0H3V1H5V0H7V1H8V4H7V5H6V6H5V7H3V6H2V5H1V4H0Z';
 
@@ -70,7 +50,7 @@ export default function HealthBar({
       aria-valuemin={0}
       aria-valuemax={safeMax}
       aria-valuenow={safeValue}
-      aria-valuetext={`${safeValue} จาก ${safeMax}`}
+      aria-valuetext={`${safeValue} out of ${safeMax}`}
     >
       <div className="mb-1 flex items-center justify-between gap-3 text-[10px] font-black uppercase sm:text-xs">
         <span>{label}</span>

@@ -1,3 +1,9 @@
+import cssWeapon from '../assets/weapons/css.png';
+import htmlWeapon from '../assets/weapons/html.png';
+import mongoWeapon from '../assets/weapons/mongo.png';
+import reactWeapon from '../assets/weapons/React.png';
+import tailwindWeapon from '../assets/weapons/tailwind.png';
+
 export const weapons = [
   {
     id: 'neeti-oni-san',
@@ -5,7 +11,7 @@ export const weapons = [
     price: 150,
     damage: 50,
     description: 'Legendary weapon of Sensei Neeti. Maximum power with 50 damage per click!',
-    img: '/src/assets/weapons/weapon.png'
+    img: reactWeapon
   },
   {
     id: 'react-tailwind',
@@ -13,7 +19,7 @@ export const weapons = [
     price: 120,
     damage: 40,
     description: 'React + Tailwind magic! 40 damange per click!',
-    img: '/src/assets/weapons/weapon.png'
+    img: tailwindWeapon
   },
   {
     id: 'mongo-supabase',
@@ -21,7 +27,7 @@ export const weapons = [
     price: 90,
     damage: 20,
     description: 'Cloud Database hammer dealing 20 damage per click!',
-    img: '/src/assets/weapons/weapon.png'
+    img: mongoWeapon
   },
   {
     id: 'html-css',
@@ -29,7 +35,7 @@ export const weapons = [
     price: 60,
     damage: 10,
     description: 'Fundamental Web Designer weapon dealing 10 damage per click!',
-    img: '/src/assets/weapons/weapon.png'
+    img: cssWeapon
   }
 ];
 
@@ -39,7 +45,7 @@ export const defaultWeapon = {
     price: 0,
     damage: 5,
     description: 'Punch the boss bare-handed dealing 5 damage per click!',
-    img: '/src/assets/weapons/weapon.png'
+    img: htmlWeapon
 };
 
 export const getWeaponById = (id) => {
@@ -49,4 +55,3 @@ export const getWeaponById = (id) => {
 };
 
 export const getAllWeapons = () => weapons;
-

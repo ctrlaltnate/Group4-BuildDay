@@ -1,17 +1,4 @@
-import React from "react";
-import rainbow_coin_spin_4_angles_transparent from "../ui/rainbow_coin_spin_4_angles_transparent.gif";
 
-export default function CoinDisplay ({ coins }) {
-    return (
-        <div>
-            <img 
-            src={rainbow_coin_spin_4_angles_transparent} 
-            alt="Coin" 
-            className="w-7 h-7 object-contain drop-shadow-md"
-            />
-        </div>
-    );
-}
 import goldCoin from '../../assets/ui/gold_coin_spin_4_angles.gif';
 
 export default function CoinDisplay({ coins = 0, label = 'Coin' }) {

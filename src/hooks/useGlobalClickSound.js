@@ -21,7 +21,7 @@ export default function useGlobalClickSound() {
       nextAudioIndex = (nextAudioIndex + 1) % audioPool.length;
       audio.currentTime = 0;
       audio.play().catch(() => {
-        // Browser อาจปฏิเสธเสียงก่อนมี user interaction ครั้งแรก
+        // Browsers may block audio before the first user interaction.
       });
     };
 

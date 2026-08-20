@@ -1,25 +1,15 @@
 export function useBossPhase(bossHp) {
-
-  let currentPhase = 1;
-  let damage = 5;
-  let interval = 1000;
-
-  if (bossHp >= 1000 && bossHp <= 2000) {
-    currentPhase = 1;
-    damage = 5; 
-    interval = 1000; 
-  } 
-  else if (bossHp >= 500 && bossHp <= 999) {
-    currentPhase = 2;
-    damage = 10;
-    interval = 1000; 
+  if (bossHp < 500) {
+    return { currentPhase: 3, attackStage: 4, damage: 25, interval: 250 };
   }
 
-  else if (bossHp < 500) {
-    currentPhase = 3;
-    damage = 10; 
-    interval = 500; 
+  if (bossHp < 1000) {
+    return { currentPhase: 3, attackStage: 3, damage: 20, interval: 400 };
   }
 
-  return { currentPhase, damage, interval };
+  if (bossHp < 1500) {
+    return { currentPhase: 2, attackStage: 2, damage: 15, interval: 500 };
+  }
+
+  return { currentPhase: 1, attackStage: 1, damage: 10, interval: 700 };
 }

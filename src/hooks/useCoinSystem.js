@@ -42,7 +42,7 @@ export default function useCoinSystem({ isRunning }) {
 
     setBigCoinVisible(false);
     setBigCoinsCollected((currentCount) => currentCount + 1);
-    addCoins(10);
+    addCoins(20);
     return true;
   }, [
     addCoins,
