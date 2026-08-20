@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import gameOverSound from './assets/soundeffect/game-over.ogg';
 import FlappyMinigame from './components/FlappyMinigame.jsx';
 import CoinDisplay from './components/ui/CoinDisplay.jsx';
 import HealthBar from './components/ui/HealthBar.jsx';
@@ -5,6 +7,8 @@ import Timer from './components/ui/Timer.jsx';
 import { GAME_PHASES } from './constants/game.js';
 import GameProvider from './context/GameProvider.jsx';
 import useGame from './hooks/useGame.js';
+import useGlobalClickSound from './hooks/useGlobalClickSound.js';
+import useSoundEffect from './hooks/useSoundEffect.js';
 
 function PhasePanel({ title, description, actionLabel, onAction }) {
   return (
@@ -28,6 +32,12 @@ function PhasePanel({ title, description, actionLabel, onAction }) {
 }
 
 function GameScreen() {
+  useGlobalClickSound();
+  const playGameOverSound = useSoundEffect(gameOverSound, {
+    volume: 0.4,
+    poolSize: 1,
+  });
+
   const {
     phase,
     playerHp,
@@ -40,6 +50,12 @@ function GameScreen() {
     finishBoss,
     restartGame,
   } = useGame();
+
+  useEffect(() => {
+    if (phase === GAME_PHASES.RESULT && result?.status === 'LOSE') {
+      playGameOverSound();
+    }
+  }, [phase, playGameOverSound, result?.status]);
 
   const renderPhase = () => {
     switch (phase) {

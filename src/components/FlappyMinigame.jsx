@@ -1,32 +1,53 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import goldCoin from '../assets/ui/gold_coin_spin_4_angles.gif';
+import coinCollectSound from '../assets/soundeffect/coin-collect.wav';
+import obstacleHitSound from '../assets/soundeffect/obstacle-hit.wav';
+import survivalBgm from '../assets/soundeffect/survival-bgm.ogg';
+import useBackgroundMusic from '../hooks/useBackgroundMusic.js';
 import useCoinSystem from '../hooks/useCoinSystem.js';
 import useGame from '../hooks/useGame.js';
 import useGameTimer from '../hooks/useGameTimer.js';
+import useSoundEffect from '../hooks/useSoundEffect.js';
 
 const GRAVITY = 88;
 const JUMP_FORCE = -38;
 const OBSTACLE_SPEED = 24;
 const BIRD_X = 18;
+const BIRD_WIDTH = 6;
+const BIRD_HEIGHT = 7;
+const OBSTACLE_WIDTH = 11;
+const OBSTACLE_START_X = 105;
+const OBSTACLE_END_X = -12;
+const OBSTACLE_CYCLE_WIDTH = OBSTACLE_START_X - OBSTACLE_END_X;
+const HITBOX_PADDING = 1.25;
 const GAP_SIZE = 32;
 const COLLISION_DAMAGE = 300;
 const HIT_COOLDOWN = 900;
 
 export default function FlappyMinigame() {
+  useBackgroundMusic(survivalBgm, { volume: 0.16 });
+
   const {
     playerHp,
     damagePlayer,
     completeSurvival,
     loseGame,
+    setBigCoinVisible,
   } = useGame();
   const [birdY, setBirdY] = useState(45);
   const [obstacleX, setObstacleX] = useState(105);
   const [gapY, setGapY] = useState(50);
+  const [coinX, setCoinX] = useState(105);
+  const [coinY, setCoinY] = useState(50);
   const [isHit, setIsHit] = useState(false);
   const velocityRef = useRef(0);
   const birdYRef = useRef(45);
   const obstacleXRef = useRef(105);
   const gapYRef = useRef(50);
+  const coinXRef = useRef(105);
+  const coinYRef = useRef(50);
+  const wasCoinVisibleRef = useRef(false);
+  const coinUsesNextGapRef = useRef(false);
   const lastFrameRef = useRef(null);
   const lastHitRef = useRef(0);
   const hitTimeoutRef = useRef(null);
@@ -34,6 +55,14 @@ export default function FlappyMinigame() {
 
   useGameTimer({ isRunning, onTimeUp: completeSurvival });
   const { bigCoinVisible, collectBigCoin } = useCoinSystem({ isRunning });
+  const playHitSound = useSoundEffect(obstacleHitSound, { volume: 0.5 });
+  const playCoinSound = useSoundEffect(coinCollectSound, { volume: 0.55 });
+
+  const handleCollectCoin = useCallback(() => {
+    const wasCollected = collectBigCoin();
+    if (wasCollected) playCoinSound();
+    return wasCollected;
+  }, [collectBigCoin, playCoinSound]);
 
   const jump = useCallback(() => {
     if (isRunning) velocityRef.current = JUMP_FORCE;
@@ -45,10 +74,11 @@ export default function FlappyMinigame() {
 
     lastHitRef.current = now;
     damagePlayer(COLLISION_DAMAGE);
+    playHitSound();
     setIsHit(true);
     window.clearTimeout(hitTimeoutRef.current);
     hitTimeoutRef.current = window.setTimeout(() => setIsHit(false), 250);
-  }, [damagePlayer]);
+  }, [damagePlayer, playHitSound]);
 
   useEffect(
     () => () => {
@@ -85,24 +115,81 @@ export default function FlappyMinigame() {
       birdYRef.current += velocityRef.current * delta;
       obstacleXRef.current -= OBSTACLE_SPEED * delta;
 
-      if (obstacleXRef.current < -12) {
-        obstacleXRef.current = 105;
-        gapYRef.current = 30 + Math.random() * 40;
+      if (bigCoinVisible && !wasCoinVisibleRef.current) {
+        const obstacleIsAhead =
+          obstacleXRef.current > BIRD_X + BIRD_WIDTH + 4;
+        coinUsesNextGapRef.current = !obstacleIsAhead;
+        coinXRef.current =
+          obstacleXRef.current +
+          OBSTACLE_WIDTH / 2 +
+          (obstacleIsAhead ? 0 : OBSTACLE_CYCLE_WIDTH);
+        coinYRef.current = obstacleIsAhead
+          ? gapYRef.current
+          : 30 + Math.random() * 40;
+        setCoinX(coinXRef.current);
+        setCoinY(coinYRef.current);
       }
 
-      const isOutsideArea = birdYRef.current <= 2 || birdYRef.current >= 92;
+      wasCoinVisibleRef.current = bigCoinVisible;
+
+      if (bigCoinVisible) {
+        coinXRef.current -= OBSTACLE_SPEED * delta;
+
+        const coinTouchesBird =
+          coinXRef.current <= BIRD_X + 7 &&
+          coinXRef.current >= BIRD_X - 7 &&
+          Math.abs(coinYRef.current - birdYRef.current) <= 9;
+
+        if (coinTouchesBird) {
+          handleCollectCoin();
+          coinXRef.current = OBSTACLE_START_X;
+        }
+
+        if (coinXRef.current < -12) {
+          setBigCoinVisible(false);
+          coinXRef.current = OBSTACLE_START_X;
+        }
+
+        setCoinX(coinXRef.current);
+      }
+
+      if (obstacleXRef.current < OBSTACLE_END_X) {
+        obstacleXRef.current = OBSTACLE_START_X;
+        gapYRef.current =
+          bigCoinVisible && coinUsesNextGapRef.current
+            ? coinYRef.current
+            : 30 + Math.random() * 40;
+        coinUsesNextGapRef.current = false;
+      }
+
+      const minBirdY = 0;
+      const maxBirdY = 92 - BIRD_HEIGHT;
+
+      if (birdYRef.current < minBirdY) {
+        birdYRef.current = minBirdY;
+        velocityRef.current = 0;
+      } else if (birdYRef.current > maxBirdY) {
+        birdYRef.current = maxBirdY;
+        velocityRef.current = 0;
+      }
+
+      const birdLeft = BIRD_X + HITBOX_PADDING;
+      const birdRight = BIRD_X + BIRD_WIDTH - HITBOX_PADDING;
+      const obstacleLeft = obstacleXRef.current + HITBOX_PADDING;
+      const obstacleRight =
+        obstacleXRef.current + OBSTACLE_WIDTH - HITBOX_PADDING;
       const obstacleTouchesBird =
-        obstacleXRef.current <= BIRD_X + 7 &&
-        obstacleXRef.current >= BIRD_X - 7;
+        obstacleLeft < birdRight && obstacleRight > birdLeft;
       const gapTop = gapYRef.current - GAP_SIZE / 2;
       const gapBottom = gapYRef.current + GAP_SIZE / 2;
+      const birdTop = birdYRef.current + HITBOX_PADDING;
+      const birdBottom =
+        birdYRef.current + BIRD_HEIGHT - HITBOX_PADDING;
       const birdOutsideGap =
-        birdYRef.current - 4 < gapTop || birdYRef.current + 4 > gapBottom;
+        birdTop < gapTop || birdBottom > gapBottom;
 
-      if (isOutsideArea || (obstacleTouchesBird && birdOutsideGap)) {
+      if (obstacleTouchesBird && birdOutsideGap) {
         registerHit();
-        birdYRef.current = Math.min(90, Math.max(4, birdYRef.current));
-        velocityRef.current = isOutsideArea ? JUMP_FORCE / 2 : velocityRef.current;
       }
 
       setBirdY(birdYRef.current);
@@ -116,7 +203,13 @@ export default function FlappyMinigame() {
       cancelAnimationFrame(animationFrameId);
       lastFrameRef.current = null;
     };
-  }, [isRunning, registerHit]);
+  }, [
+    bigCoinVisible,
+    handleCollectCoin,
+    isRunning,
+    registerHit,
+    setBigCoinVisible,
+  ]);
 
   return (
     <div
@@ -154,11 +247,12 @@ export default function FlappyMinigame() {
 
       {bigCoinVisible && (
         <button
-          className="absolute left-[62%] top-1/2 z-30 -translate-y-1/2 border-0 bg-transparent p-2"
+          className="absolute z-30 -translate-x-1/2 -translate-y-1/2 border-0 bg-transparent p-2"
+          style={{ left: `${coinX}%`, top: `${coinY}%` }}
           type="button"
           onClick={(event) => {
             event.stopPropagation();
-            collectBigCoin();
+            handleCollectCoin();
           }}
           aria-label="เก็บเหรียญใหญ่ 10 แต้ม"
         >

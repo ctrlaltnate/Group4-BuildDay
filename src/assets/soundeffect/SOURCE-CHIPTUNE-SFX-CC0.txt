@@ -1,0 +1,17 @@
+Chiptune SFX Pack
+Author: FrogPog
+Source: https://opengameart.org/content/chiptune-sfx-pack
+License: Creative Commons Zero (CC0)
+
+Files used in this project:
+- click_2.wav -> ui-click.wav
+- damaged.wav -> obstacle-hit.wav
+- coin_1.wav -> coin-collect.wav
+- game_over.wav -> game-over.ogg (converted from WAV to OGG)
+
+Background music:
+Title: Flowerbed Fields [Loop]
+Author: Zane Little Music
+Source: https://opengameart.org/content/flowerbed-fields-loop
+License: Creative Commons Zero (CC0)
+File used: flowerbed_fields.ogg -> survival-bgm.ogg
