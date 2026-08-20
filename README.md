@@ -1,282 +1,306 @@
-# 🎮 Flappy Boss Survival: React Build Day Game Plan
+# Flappy Boss Survival
 
-เอกสารฉบับนี้อธิบายโครงสร้างและ Game Flow ของเกมแนว Flappy Bird Survival ที่มีระบบเก็บเหรียญ ซื้ออาวุธ และต่อสู้กับบอส อ้างอิงจากแผนผัง Flowchart
+เกม React สไตล์ 8-bit ที่รวมเกมบินหลบสิ่งกีดขวาง การสะสม Coins ร้านค้าอาวุธ และการต่อสู้กับบอสไว้ในรอบเดียว ผู้เล่นต้องเลือกตัวละคร เอาชีวิตรอด 60 วินาที เลือกอาวุธตาม Coins ที่มี และกำจัดบอสก่อน HP หมด
 
-## 📋 เช็กลิสต์ความสอดคล้องกับ Requirement ของ React Build Day
-- [x] **State Management (`useState`)**: จัดการ HP ผู้เล่น, HP บอส, เวลา, จำนวนเหรียญ, สถานะเกม
-- [x] **Event Handling (`onClick`)**: กดกระโดด, กดเก็บเหรียญ, กดซื้ออาวุธ, กดตีบอส
-- [x] **Side Effects (`useEffect`)**: ระบบจับเวลา 60 วินาที, ระบบ Passive Income, ระบบบอสโจมตีอัตโนมัติ
-- [x] **Conditional Rendering**: การสลับหน้าจอ (Character Select -> Minigame -> Shop -> Boss -> Result)
+เอกสารนี้อ้างอิงจาก implementation ปัจจุบันใน `src/` ไม่ใช่แผนเริ่มต้นใน `ProjectPlan.md`
 
----
+## Tech Stack และคำสั่ง
 
-## 🗺️ Game Flow & Logic (อธิบายตามแผนผัง)
+- React 19, React DOM, Vite 8
+- Tailwind CSS 4 ผ่าน `@tailwindcss/vite`
+- React Context สำหรับ shared state
+- `requestAnimationFrame` สำหรับ Flappy physics
+- `HTMLAudioElement` และ audio pool สำหรับเพลง/เอฟเฟกต์
+- ESLint สำหรับตรวจ JavaScript/JSX
 
-เกมแบ่งออกเป็น 4 Phase หลัก:
-
-### Phase 1: การเตรียมตัว (Start & Select)
-1. แสดงปุ่ม **START**
-2. เข้าสู่หน้า **Select Character** (เลือกตัวละคร)
-3. เมื่อเลือกเสร็จ จะกำหนดค่าเริ่มต้น: `Player HP = 1000`, `Time = 60 วินาที`, `Coins = 0`
-
-### Phase 2: เอาชีวิตรอด (Flappy Bird 1 Min)
-1. **เป้าหมาย:** เอาชีวิตรอดให้ครบ 1 นาที (60 วินาที) โดยที่ `HP > 0`
-2. **ระบบเหรียญ (XP/Coins):**
-   - **Passive:** เพิ่ม 1 เหรียญ ทุกๆ 1 วินาที (รวม 60 เหรียญ)
-   - **Active:** มี "เหรียญใหญ่" โผล่มาให้คลิกเก็บทุกๆ 5 วินาที ได้เหรียญละ 10 แต้ม (สูงสุด 10 ครั้ง = 100 แต้ม)
-   - *หมายเหตุ: ผู้เล่นจะเก็บเหรียญได้สูงสุด 160 แต้ม*
-3. **ระบบความเสียหาย:**
-   - หากชนสิ่งกีดขวาง (Hit Obstacle): ผู้เล่นโดนหัก HP -300
-   - ตรวจสอบ: ถ้า `HP <= 0` ให้จบเกม แสดงสถานะแพ้ และกลับไปเริ่มเกมใหม่ (Game Over)
-4. **เงื่อนไขผ่านด่าน:** ถ้าครบ 1 นาที และ `HP > 0` จะเข้าสู่ร้านค้า
-
-### Phase 3: ร้านค้าอาวุธ (Weapon Shop)
-ใช้แต้ม (Coins) ที่เก็บได้มาซื้ออาวุธ (เลือกได้ชิ้นเดียว)
-- 🗡️ **p Niti:** ราคา 150 pts | พลังโจมตี: 50 damage / click
-- 🗡️ **react/tailwind:** ราคา 120 pts | พลังโจมตี: 40 damage / click
-- 🗡️ **MongoDB/Supabase:** ราคา 90 pts | พลังโจมตี: 20 damage / click
-- 🗡️ **HTML/CSS:** ราคา 60 pts | พลังโจมตี: 10 damage / click
-
-### Phase 4: ศึกตัดสิน (Boss Fight)
-1. ตั้งค่าเริ่มต้น: `Boss HP = 2000`, `Player HP = คงเหลือจากด่านที่แล้ว`
-2. **การโจมตีของผู้เล่น:** คลืกตีบอสเพื่อลด Boss HP ตามอาวุธที่ซื้อมา
-3. **การโจมตีของบอส (Boss Phases):** บอสจะโจมตีผู้เล่นแบบอัตโนมัติตามเลือดที่เหลือของมัน
-   - **Phase 1 (Boss HP 1000 - 1999):** โจมตีผู้เล่น -5 HP ทุก 1 วินาที
-   - **Phase 2 (Boss HP 500 - 999):** โจมตีผู้เล่น -10 HP ทุก 1 วินาที
-   - **Phase 3 (Boss HP < 500):** บอสคลั่ง! โจมตีผู้เล่น -10 HP ทุก 0.5 วินาที (-20 HP/วินาที)
-4. **ผลแพ้ชนะ (End Game Condition):**
-   - ถ้า `Player HP <= 0` และ `Boss HP > 0` => **Player Lose** (บอสชนะ)
-   - ถ้า `Boss HP <= 0` และ `Player HP > 0` => **Player Win** (ผู้เล่นชนะ)
-   - ถ้าเลือดหมดพร้อมกัน ถือว่าผู้เล่นแพ้
-
----
-
-## 📂 โครงสร้างไฟล์โปรเจกต์
-
-โครงสร้างแบ่งเป็นไฟล์ตั้งค่าของโปรเจกต์ ไฟล์ข้อมูลจำลอง ส่วนประกอบของหน้าจอ และไฟล์เริ่มต้นของ React โดยให้แต่ละ feature มีเจ้าของไฟล์ชัดเจนและลดการเขียน logic ซ้ำกัน
-
-```text
-group4buildday/
-├── index.html                    # HTML entry point และ root element ของ React
-├── package.json                  # dependencies และคำสั่งเริ่มต้นหรือ build โปรเจกต์
-├── vite.config.js                # การตั้งค่า Vite และ React plugin
-├── eslint.config.js              # กฎตรวจสอบคุณภาพ JavaScript และ JSX
-├── README.md                     # รายละเอียดเกม flow chart กติกา และแนวทางพัฒนา
-├── CONTRIBUTIONS.md              # ตาราง feature และหน้าที่ของสมาชิกในทีม
-├── contributor.md                # รายละเอียดการแบ่งงานสำหรับสมาชิก 5 คน
-├── public/                       # ไฟล์ static ที่อ้างอิงด้วย path ตรง
-│   ├── favicon.svg               # ไอคอนของเว็บ
-│   └── icons.svg                 # ชุดไอคอนของ template หรือ UI
-└── src/                          # source code หลักของ React
-   ├── App.jsx                   # ตัวควบคุม game state และ conditional rendering
-   ├── App.css                   # style ของ App และหน้าจอหลัก
-   ├── index.css                 # style พื้นฐานของโปรเจกต์
-   ├── main.jsx                  # จุด mount React เข้ากับ index.html
-   ├── assets/                   # asset ที่ import ผ่านระบบของ Vite
-   │   ├── hero.png              # asset ตัวอย่างเดิมของ Vite
-   │   ├── react.svg             # asset ตัวอย่างเดิมของ Vite
-   │   ├── vite.svg              # asset ตัวอย่างเดิมของ Vite
-   │   ├── characters/           # เพิ่มเพื่อเก็บภาพตัวละครและอิริยาบถ
-   │   ├── villains/             # เพิ่มเพื่อเก็บภาพบอสและอิริยาบถ
-   │   ├── weapons/              # เพิ่มเพื่อเก็บภาพหรือไอคอนอาวุธ
-   │   ├── obstacles/            # เพิ่มเพื่อเก็บภาพสิ่งกีดขวาง
-   │   └── ui/                   # เพิ่มเพื่อเก็บภาพเหรียญและองค์ประกอบ UI
-   ├── components/               # React components ของแต่ละ feature
-   │   ├── Example.jsx           # ไฟล์ตัวอย่างเดิม ใช้ลบหรือแทนที่เมื่อเริ่มพัฒนา
-   │   ├── StartScreen.jsx       # Feature หน้าเริ่มเกม
-   │   ├── CharacterSelect.jsx   # Feature เลือกตัวละคร
-   │   ├── FlappyMinigame.jsx    # Feature เอาชีวิตรอดและควบคุมตัวละคร
-   │   ├── WeaponShop.jsx        # Feature ร้านค้าอาวุธ
-   │   ├── BossFight.jsx          # Feature ต่อสู้กับบอสและ Boss Phase
-   │   ├── ResultScreen.jsx      # Feature แสดงผลชนะหรือแพ้
-   │   └── ui/                   # UI ที่ใช้ร่วมกันหลายหน้าจอ
-   │       ├── HealthBar.jsx     # แถบ HP ของผู้เล่นหรือบอส
-   │       ├── CoinDisplay.jsx   # ตัวแสดง Coins
-   │       ├── Timer.jsx          # เพิ่มเมื่อแยก timer เป็น component
-   │       └── Button.jsx         # เพิ่มเมื่อมีปุ่มรูปแบบร่วมกัน
-   ├── context/                  # ข้อมูลหรือ state ที่แชร์ข้าม component
-   │   ├── MessageContext.jsx    # context สำหรับข้อความหรือ feedback ในเกม
-   │   └── MessageProvider.jsx   # provider ของข้อความหรือ feedback
-   ├── mock-data/                # ข้อมูลจำลองที่ใช้ร่วมกันหลาย feature
-   │   ├── characters.js         # ข้อมูลตัวละครและ path แต่ละอิริยาบถ
-   │   ├── villian.js            # ข้อมูลวายร้าย บอส และรายละเอียดแต่ละ phase
-   │   └── weapons.js             # เพิ่มสำหรับชื่อ ราคา damage และ asset อาวุธ
-   ├── pages/                    # หน้าหลักหรือ layout ที่รวม feature
-   │   └── Nav.jsx               # navigation หรือส่วนควบคุมการนำทาง ถ้ามี
-   └── hooks/                    # custom hooks ที่แยก logic ออกจาก UI
-      ├── useGameTimer.js       # เพิ่มสำหรับ timer ของ Flappy Survival
-      ├── useCoinSystem.js      # เพิ่มสำหรับ Passive Coin และ Big Coin
-      └── useBossPhase.js       # เพิ่มสำหรับ phase และรอบโจมตีของบอส
+```bash
+npm install
+npm run dev       # development server
+npm run lint      # ตรวจ source
+npm run build     # production bundle ใน dist/
+npm run preview   # preview production build
 ```
 
-### หน้าที่ของโฟลเดอร์หลัก
+## Game Flow
 
-| โฟลเดอร์หรือไฟล์ | หน้าที่ | สิ่งที่ไม่ควรเก็บไว้ |
-|---|---|---|
-| `src/components/` | UI และ logic ของ feature ที่แยกเป็นส่วน ๆ | ข้อมูลตัวละครที่ควรอยู่ใน `src/mock-data/` |
-| `src/mock-data/` | ค่าตั้งต้นของตัวละคร บอส และอาวุธ | state ที่เปลี่ยนระหว่างการเล่น |
-| `src/context/` | state หรือข้อความที่ต้องแชร์หลายระดับ | logic เฉพาะของหน้าจอเดียวถ้าไม่จำเป็นต้องแชร์ |
-| `src/hooks/` | logic ที่นำกลับมาใช้ซ้ำ เช่น timer หรือ phase | JSX สำหรับแสดงผลหน้าจอ |
-| `src/pages/` | หน้าหลัก layout และการรวม component | ค่าคงที่ของอาวุธหรือบอส |
-| `src/assets/` | asset ที่ import และ bundle โดย Vite | path ที่ชี้ไปยังไฟล์ที่ไม่มีอยู่จริง |
-| `public/` | static asset ที่ต้องอ้างอิงด้วย URL ตรง | asset ที่ต้องการ import ผ่าน Vite |
+```text
+START
+  ↓ Start Game
+CHARACTER_SELECT
+  ↓ Confirm character
+SURVIVAL
+  ├─ Player HP = 0 ─────────────→ RESULT (LOSE)
+  └─ รอดครบ 60 วินาที → SHOP
+                            ↓ Confirm weapon
+                          BOSS
+                            ├─ Player HP = 0 → RESULT (LOSE)
+                            └─ Boss HP = 0 ─→ RESULT (WIN)
+                                                   ↓ Start Over
+                                                 START
+```
 
-### การจัดวางไฟล์ให้ตรงกับโปรเจกต์ปัจจุบัน
+ค่าทั้งหก phase อยู่ใน `src/constants/game.js` และ `App.jsx` ใช้ conditional rendering เลือกหน้าจอ ไม่มี Router ใน game flow
 
-- `src/App.jsx` และ `src/main.jsx` เป็น entry ของแอปที่มีอยู่แล้ว
-- `components/`, `context/`, `mock-data/` และ `pages/` อยู่ภายใต้ `src/` ตามโครงสร้างปัจจุบัน
-- สมาชิกควรเพิ่ม component, context, mock-data, page และ hook ใหม่ไว้ภายใต้ `src/` เช่นเดียวกับไฟล์เดิม
-- ไม่ควรสร้างโฟลเดอร์ `components/` หรือ `mock-data/` ซ้ำที่ระดับ root
-- `Example.jsx` และ asset ตัวอย่างจาก Vite ควรถูกลบหรือแทนที่เมื่อเริ่มเชื่อมเกมจริง
-- ไฟล์ข้อมูลใหม่ เช่น `weapons.js` และ hooks ต่าง ๆ ให้เพิ่มตามโครงสร้างด้านบนเมื่อ feature เริ่มใช้งาน
+## กติกาของแต่ละ Phase
 
-## 🧠 การวาง State ระดับ Top (App.jsx)
+### Start และ Character Select
 
-ให้เก็บข้อมูลที่ใช้ร่วมกันไว้ใน App.jsx และส่งต่อให้แต่ละ feature ผ่าน props หรือ context ตามความเหมาะสม โดยยังไม่กำหนด implementation ใน README นี้
+- `StartScreen` เรียก `startGame()` เพื่อ reset session และไปหน้าเลือกตัวละคร
+- `CharacterSelect` อ่านข้อมูลจาก `mock-data/characters.js`
+- เลือกได้ครั้งละหนึ่งตัว ปุ่ม Confirm disabled จนกว่าจะเลือก
+- หน้าเลือกใช้ sprite `idle`/`stand`; Flappy ใช้ `fly`; Result ใช้ `win`/`die`
+- Description แสดงขนาดเล็กใต้กริด responsive 2/3/5 คอลัมน์
+- เมื่อยืนยัน `beginSurvival(character)` จะตั้ง HP 1,000, Coins 0, เวลา 60 และเริ่ม Survival
 
-ข้อมูลร่วมที่ควรมี ได้แก่ game state, Player HP, Boss HP, เวลา, Coins, ตัวละครที่เลือก, อาวุธที่เลือก, damage ของอาวุธ, จำนวน Big Coin ที่เก็บแล้ว และผลลัพธ์สุดท้ายของเกม
+### Flappy Survival
 
-## รายละเอียดตาม Flow Chart
+ไฟล์หลัก: `src/components/FlappyMinigame.jsx`
 
-### Start และ Select Character
+การควบคุม:
 
-- ผู้เล่นกด START เพื่อเข้าสู่หน้าเลือกตัวละคร
-- ผู้เล่นต้องเลือกตัวละครก่อนจึงจะเริ่มมินิเกมได้
-- หลังเลือกตัวละคร ให้เริ่มเกม session ใหม่ด้วย Player HP 1,000, เวลา 60 วินาที และ Coins 0
-- ตัวละครที่เลือกต้องถูกใช้ต่อเนื่องในมินิเกมและฉากบอส
-- การเริ่มเกมใหม่ต้องล้างค่าจากรอบก่อนหน้า เช่น HP, Coins, อาวุธ และผลลัพธ์
+- Mouse/touch ใช้ `pointerdown` เพื่อให้ตอบสนองทันที
+- Keyboard ใช้ `Space` หรือ `Arrow Up`
+- Jump velocity `-41`, gravity `75`, max falling speed `58`
+- ตัวละครเอียงตาม velocity และตำแหน่งอัปเดตด้วย `requestAnimationFrame` + delta time
 
-### Flappy Bird Survival 1 นาที
+ค่าการเล่น:
 
-เป้าหมายของช่วงนี้คือเอาชีวิตรอดให้ครบ 60 วินาที โดย Player HP ต้องมากกว่า 0
+| รายการ | ค่า |
+|---|---:|
+| เวลา | 60 วินาที |
+| Player HP | 1,000 |
+| Obstacle speed | 24 หน่วย/วินาที |
+| Gap size | 32% |
+| Collision damage | 300 HP |
+| Hit cooldown | 900ms |
+| Player hitbox | 6% × 7% |
+| Obstacle width/hitbox | 11% |
 
-| ระบบ | กติกา |
-|---|---|
-| Timer | เริ่มที่ 60 วินาทีและลดลงทุก 1 วินาที |
-| การกระโดด | ผู้เล่นคลิกหรือกดปุ่มเพื่อให้ตัวละครกระโดด |
-| Obstacle | เมื่อชนสิ่งกีดขวาง Player HP ลดลง 300 |
-| Passive Coin | เพิ่ม 1 แต้มทุก 1 วินาที รวมสูงสุด 60 แต้ม |
-| Big Coin | ปรากฏทุก 5 วินาที คลิกเก็บได้ครั้งละ 10 แต้ม สูงสุด 10 ครั้ง |
-| คะแนนรวม | Coins สูงสุดจากด่านนี้คือ 160 แต้ม |
+- Obstacle ใช้ `assets/obstacles/obstacle.png` ทั้งบนและล่าง
+- ตัวบนหมุน 180° และ flip horizontal
+- ใช้ `object-contain` เพื่อไม่ crop รูป; collision คำนวณแยกจากภาพด้วย padding
+- พื้นหลังอยู่คนละ layer ที่ opacity 70% จึงไม่ทำให้ตัวละคร/เหรียญ/Obstacle จาง
+- HP 0 เรียก `loseGame('SURVIVAL_HP_DEPLETED')`; เวลา 0 เรียก `completeSurvival()`
 
-เงื่อนไขระหว่างด่าน:
+Coins:
 
-- ถ้า Player HP เท่ากับหรือน้อยกว่า 0 ให้หยุดเกมและเข้าสู่สถานะแพ้ทันที
-- ถ้ายังมี HP เมื่อ Timer ครบ 0 ให้นำ Coins และ HP ที่เหลือไปยัง Weapon Shop
-- หลังจบด่านต้องหยุด timer, passive coin และการสร้าง Big Coin
-- การชนหนึ่งครั้งต้องไม่ทำให้หัก HP ซ้ำจาก event เดียวกัน
-- Big Coin ที่เก็บแล้วต้องไม่สามารถกดรับซ้ำได้
+| ประเภท | รางวัล | กติกา |
+|---|---:|---|
+| Passive | 1 Coin | ทุก 1 วินาที |
+| Rainbow collectible | 20 Coins | spawn ทุก 5 วินาที สูงสุด 10 ครั้ง |
+
+- สูงสุด 60 Passive + 200 Collectible = 260 Coins
+- `GameProvider` cap ไว้ที่ 260
+- เหรียญ collectible ใช้ `components/ui/rainbow_coin_spin_4_angles_transparent.gif`
+- HUD และจุดอื่นใช้เหรียญทองเดิม
+- เหรียญเก็บได้จากการชนหรือคลิก และรับซ้ำไม่ได้
 
 ### Weapon Shop
 
-ผู้เล่นใช้ Coins ที่เก็บได้เพื่อเลือกซื้ออาวุธได้เพียง 1 ชิ้น
+ไฟล์หลัก: `src/components/WeaponShop.jsx`, ข้อมูล: `src/mock-data/weapons.js`
 
-| อาวุธ | ราคา | Damage ต่อคลิก |
-|---|---:|---:|
-| p Niti | 150 | 50 |
-| react/tailwind | 120 | 40 |
-| MongoDB/Supabase | 90 | 20 |
-| HTML/CSS | 60 | 10 |
+- การ์ดทั้งใบเป็นปุ่ม เลือกได้ครั้งละหนึ่งอาวุธ
+- สถานะ `SELECT`, `SELECTED`, `LOCKED`
+- Card และ icon ลอย/ขยายเมื่อ hover
+- แสดงราคา Damage และ Description ก่อน Confirm
+- Coins ใช้เป็นเกณฑ์ปลดล็อก ปัจจุบัน **ไม่หัก Coins** หลังยืนยัน
 
-ร้านค้าต้องแสดงชื่อ ราคา damage และสถานะว่าสามารถซื้อได้หรือไม่ ผู้เล่นที่ Coins ไม่พอต้องซื้อไม่ได้ และเมื่อซื้อสำเร็จต้องหักราคาออกจาก Coins พร้อมบันทึกอาวุธและ damage ที่เลือกไว้สำหรับ Boss Fight
+| ID | Weapon | ราคา | Damage/คลิก |
+|---|---|---:|---:|
+| `neeti-oni-san` | Neeti-oni-san | 150 | 50 |
+| `react-tailwind` | React/Tailwind | 120 | 40 |
+| `mongo-supabase` | MongoDB/Supabase | 90 | 20 |
+| `html-css` | HTML/CSS | 60 | 10 |
+| `fists` | Fists (Bare Hands) | 0 | 5 |
+
+Fists ทำให้เข้า Boss Fight ได้เสมอแม้ Coins ไม่พอ
 
 ### Boss Fight
 
-- เริ่มฉากด้วย Boss HP 2,000
-- ใช้ Player HP ที่เหลือจาก Flappy Survival
-- การคลิกโจมตีบอสลด Boss HP ตาม damage ของอาวุธ
-- แม้บอสเริ่มต้นที่ HP 2,000 ให้ใช้รูปแบบการโจมตีของ Phase 1 ตั้งแต่เริ่มการต่อสู้
-- เมื่อ Boss HP ลดลง ต้องตรวจสอบ phase ก่อนกำหนดรอบโจมตีถัดไป
-- Boss HP และ Player HP ต้องไม่แสดงค่าติดลบ
-- เมื่อฝ่ายใดฝ่ายหนึ่งจบเกม ต้องหยุด timer และ event ที่เกี่ยวข้องทั้งหมด
+ไฟล์หลัก: `src/components/BossFight.jsx`, timing: `src/hooks/useBossPhase.js`
 
-| Boss Phase | ช่วง Boss HP | Damage | รอบโจมตี |
-|---|---:|---:|---:|
-| Phase 1 | 1,000 ถึง 1,999 | 5 | ทุก 1 วินาที |
-| Phase 2 | 500 ถึง 999 | 10 | ทุก 1 วินาที |
-| Phase 3 | ต่ำกว่า 500 | 10 | ทุก 0.5 วินาที |
+- ใช้พื้นหลังเดียวกับ Flappy
+- HUD ด้านบนคงสัดส่วน 10% แสดง Player HP, Coins และ Timer; gameplay ใช้ 90%
+- ผู้เล่นขนาดเล็กอยู่ซ้าย บอสขนาดใหญ่อยู่ขวา
+- Boss HealthBar max 2,000 อยู่เหนือหัวบอส
+- กดที่ตัวบอสเพื่อโจมตี หนึ่งคลิกสร้าง projectile หนึ่งชุด
+- Projectile ใช้ icon อาวุธที่เลือกและลด HP ตาม weapon damage
+- Boss auto attack ทำงานพร้อมการคลิกของผู้เล่น การคลิกไม่ reset timer
 
-Phase 3 คือช่วงบอสคลั่ง จึงทำความเสียหายรวมประมาณ 20 HP ต่อวินาที
+| Boss HP | Visual phase | Damage | Interval |
+|---:|---:|---:|---:|
+| 1,500–2,000 | 1 | 10 | 700ms |
+| 1,000–1,499 | 2 | 15 | 500ms |
+| 500–999 | 3 | 20 | 400ms |
+| ต่ำกว่า 500 | 3 / attack stage 4 | 25 | 250ms |
 
-## เงื่อนไขแพ้ชนะ
+- ทุก auto attack แสดง `BOOM!` และเล่น `boss_toom.mp3`
+- เมื่อ visual phase เปลี่ยน ภาพบอสเปลี่ยนและเล่น transform effect
+- Neeti เล่น `neeti-added.mp3`, แสดง `characters/nitihelp.png` และปา icon อาวุธทุกชนิดพร้อมกัน
+- Neeti ยังคงทำ 50 damage/คลิก ไม่คูณ damage ตามจำนวน projectile
+- Boss HP 0 = WIN; Player HP 0 = LOSE; HP ไม่ติดลบ
 
-ตรวจสอบผลหลังการกระทำที่ทำให้ HP เปลี่ยนทุกครั้ง โดยกรณีเลือดหมดพร้อมกันให้ถือว่าผู้เล่นแพ้ตาม flow chart
+### Result Screen
 
-| ผลลัพธ์ | เงื่อนไข |
+`ResultScreen.jsx` ใช้ pixel panels แบบกะทัดรัดและแสดงข้อมูลเดิมครบ:
+
+- `You Win` / `Game Over`
+- sprite `win` หรือ `die`
+- Character, Weapon, Coins
+- Player HP และ Boss HP สุดท้าย
+- `Start Over` เรียก `restartGame()` เพื่อล้าง session และกลับ `START`
+
+## Shared State Contract
+
+`GameProvider.jsx` เป็นเจ้าของ state กลางและส่งผ่าน `GameContext`; component อ่านผ่าน `useGame()`
+
+| State | Initial | หน้าที่ |
+|---|---:|---|
+| `phase` | `START` | หน้าจอปัจจุบัน |
+| `playerHp` | 1000 | ต่อเนื่องจาก Survival ไป Boss/Result |
+| `bossHp` | 2000 | HP บอสและค่า Result |
+| `coins` | 0 | Coins สะสม (cap 260) |
+| `timeLeft` | 60 | เวลา Survival |
+| `selectedCharacter` | `null` | Character object ที่เลือก |
+| `selectedWeapon` | `null` | Weapon object ที่เลือก |
+| `result` | `null` | `{ status, reason }` |
+| `bigCoinVisible` | `false` | การมองเห็น collectible |
+| `bigCoinsCollected` | 0 | จำนวน collectible ที่เก็บ |
+
+Actions:
+
+| Action | ผล |
 |---|---|
-| Player Win | Boss HP หมด และ Player HP ยังมากกว่า 0 |
-| Player Lose | Player HP หมดก่อนที่ Boss HP จะหมด |
-| Player Lose | Player HP และ Boss HP หมดพร้อมกัน |
-| Survival Game Over | Player HP หมดระหว่าง Flappy Survival |
+| `startGame()` | reset และไป Character Select |
+| `beginSurvival(character)` | เก็บ character, reset Survival, ไป SURVIVAL |
+| `damagePlayer(damage)` | ลด HP แบบ clamp ที่ 0 |
+| `addCoins(amount)` | เพิ่ม Coins ไม่เกิน 260 |
+| `completeSurvival()` | ไป SHOP |
+| `loseGame(reason)` | บันทึก LOSE และไป RESULT |
+| `selectWeapon(weapon)` | เก็บ weapon, reset Boss HP, ไป BOSS |
+| `finishBoss(result)` | บันทึกผลและไป RESULT |
+| `restartGame()` | reset ทุกค่าและกลับ START |
 
-หน้า Result ควรสรุปผลลัพธ์ ตัวละคร อาวุธ Coins และ HP ที่เหลือ พร้อมปุ่มเริ่มเกมใหม่
+## Custom Hooks
 
-## ข้อมูล Mock Data และ Asset
-
-### characters.js
-
-ข้อมูลตัวละครแต่ละตัวควรมี id ที่ไม่ซ้ำ ชื่อ คำอธิบาย และ path ของรูปภาพที่จำเป็นต่อแต่ละสถานะ ได้แก่ idle, flap หรือ jump, hit, win และ lose
-
-### villian.js
-
-ข้อมูลวายร้ายควรมี id ชื่อ path ภาพ HP เริ่มต้น และรายละเอียดของ Phase 1 ถึง Phase 3 ได้แก่ช่วง HP, damage, รอบโจมตี และ path ของสถานะ idle, attack, hit และ defeat
-
-### weapons.js
-
-ควรแยกข้อมูลอาวุธออกเป็นชุดข้อมูลที่มี id ชื่อ ราคา damage path ไอคอน และคำอธิบาย เพื่อให้ Weapon Shop และ Boss Fight ใช้ข้อมูลชุดเดียวกัน
-
-### การเตรียม Asset
-
-- ตั้งชื่อไฟล์ให้สื่อความหมายและใช้รูปแบบเดียวกัน
-- ตรวจสอบว่า path ใน mock-data ตรงกับตำแหน่งไฟล์จริง
-- เตรียมภาพให้ครบทุกสถานะที่ component เรียกใช้
-- มีภาพสำรองหรือสถานะ loading เมื่อ asset ยังโหลดไม่เสร็จ
-- ตรวจสอบ alt text และขนาดภาพไม่ให้ทำให้ layout เปลี่ยนระหว่างเล่น
-
-## Component และ Feature ที่ต้องพัฒนา
-
-| Feature | งานที่ต้องส่งมอบ |
+| Hook | หน้าที่ |
 |---|---|
-| Game Flow | ควบคุมการเปลี่ยนหน้าจอและส่งข้อมูลร่วมระหว่างทุก phase |
-| Start Screen | แสดงชื่อเกมและเริ่ม session ใหม่ |
-| Character Select | แสดงรายการตัวละคร เลือกตัวละคร และส่งข้อมูลตัวละครที่เลือก |
-| Flappy Survival | ควบคุมตัวละคร การชน timer, HP และการจบมินิเกม |
-| Coin System | จัดการ Passive Coin, Big Coin, คะแนนสูงสุด และการหยุดระบบเมื่อจบด่าน |
-| Weapon Shop | แสดงอาวุธ ตรวจ Coins ซื้อได้เพียง 1 ชิ้น และส่ง damage ไปบอส |
-| Boss Fight | จัดการการโจมตี Boss Phase การโจมตีอัตโนมัติ และผลแพ้ชนะ |
-| Result Screen | แสดงผลสรุปและเริ่มเกมใหม่ |
-| Result Screen, Shared UI และ Asset Support | พัฒนาหน้าสรุปผล HealthBar, CoinDisplay, Timer, styling และช่วยคนที่ 4 เตรียม/ตรวจสอบ asset |
+| `useGame` | อ่าน Context และป้องกันการใช้นอก Provider |
+| `useGameTimer` | interval 1 วินาที, callback ref, cleanup เมื่อหยุด/unmount |
+| `useCoinSystem` | Passive/collectible Coins, cap 10, cleanup intervals |
+| `useBossPhase` | map Boss HP → visual phase, attack stage, damage, interval |
+| `useSoundEffect` | audio pool สำหรับเสียงที่เล่นถี่/ซ้อนกัน |
+| `useBackgroundMusic` | loop BGM, retry หลัง user interaction, cleanup |
+| `useGlobalClickSound` | UI click sound ทุก left pointerdown |
 
-## การจัดการ Side Effect และ Event
+## Shared UI
 
-ระบบ timer, passive coin และการโจมตีอัตโนมัติของบอสต้องเริ่มและหยุดตาม game state ที่ถูกต้อง เมื่อเปลี่ยนหน้า หยุดเกม หรือจบผลลัพธ์ ต้องยกเลิก event และ timer ของหน้าก่อนหน้าเพื่อไม่ให้ข้อมูลเพิ่มต่อเอง
+| Component | Props หลัก | หน้าที่ |
+|---|---|---|
+| `HealthBar` | `value`, `max`, `label`, `hearts` | pixel hearts + ARIA progressbar |
+| `CoinDisplay` | `coins`, `label` | gold coin + zero-padded number |
+| `Timer` | `seconds`, `warningAt`, `label` | `m:ss`, warning pulse |
+| `Button` | `onClick`, `disabled`, `variant` | primary/secondary shared button |
 
-Event หลักของเกมประกอบด้วยการเริ่มเกม การเลือกตัวละคร การกระโดด การเก็บ Big Coin การชนสิ่งกีดขวาง การซื้ออาวุธ การโจมตีบอส และการเริ่มเกมใหม่ ทุก event ต้องตรวจสอบว่าเกมยังอยู่ใน phase ที่อนุญาตก่อนทำงาน
+## โครงสร้างและลำดับการวางไฟล์
 
-## Checklist ก่อนรวมงาน
+```text
+group4buildday/
+├── index.html                  # HTML shell และ #root
+├── package.json                # dependencies/scripts
+├── vite.config.js              # Vite/React/Tailwind
+├── eslint.config.js            # lint rules
+├── README.md                   # คู่มือ implementation
+├── ProjectPlan.md              # แผนเริ่มต้น (historical plan)
+├── CONTRIBUTIONS.md            # ownership/status summary
+├── contributor.md              # รายละเอียดผลงานสมาชิก
+├── public/                     # static URL assets
+└── src/
+    ├── main.jsx                # mount App ภายใต้ StrictMode
+    ├── App.jsx                 # game frame, HUD, phase renderer
+    ├── index.css               # Tailwind/global theme/keyframes
+    ├── App.css                 # App-specific/legacy styles
+    ├── constants/game.js       # GAME_PHASES
+    ├── context/
+    │   ├── GameContext.jsx     # createContext
+    │   └── GameProvider.jsx    # shared state/actions
+    ├── hooks/                  # reusable non-JSX logic
+    │   ├── useGame.js
+    │   ├── useGameTimer.js
+    │   ├── useCoinSystem.js
+    │   ├── useBossPhase.js
+    │   ├── useSoundEffect.js
+    │   ├── useBackgroundMusic.js
+    │   └── useGlobalClickSound.js
+    ├── mock-data/
+    │   ├── characters.js       # metadata + sprite imports
+    │   ├── weapons.js          # metadata + icon imports
+    │   └── villian.js          # boss metadata/helper (ชื่อเดิม)
+    ├── components/
+    │   ├── StartScreen.jsx
+    │   ├── CharacterSelect.jsx
+    │   ├── FlappyMinigame.jsx
+    │   ├── WeaponShop.jsx
+    │   ├── BossFight.jsx
+    │   ├── ResultScreen.jsx
+    │   └── ui/
+    │       ├── HealthBar.jsx
+    │       ├── CoinDisplay.jsx
+    │       ├── Timer.jsx
+    │       ├── Button.jsx
+    │       └── rainbow_coin_spin_4_angles_transparent.gif
+    └── assets/
+        ├── characters/         # stand/idle, fly, win, lose, Neeti helper
+        ├── villains/           # idle/hit/transform/phases/defeat
+        ├── weapons/            # React/Tailwind/Mongo/HTML/CSS
+        ├── obstacles/          # obstacle.png
+        ├── ui/                 # background/gold coin
+        └── soundeffect/        # BGM และ effects
+```
 
-- Start ไป Character Select ได้
-- เลือกตัวละครแล้วเริ่มด้วย HP 1,000, เวลา 60 วินาที และ Coins 0
-- Timer และระบบเหรียญหยุดเมื่อด่านจบ
-- ชนสิ่งกีดขวางแล้วลด HP ครั้งละ 300
-- HP หมดก่อนครบเวลาแล้วเข้าสู่หน้าผู้เล่นแพ้
-- Passive Coin ได้สูงสุด 60 แต้ม
-- Big Coin ได้สูงสุด 100 แต้ม และกดรับซ้ำไม่ได้
-- รอดครบ 60 วินาทีแล้วเข้าสู่ร้านค้า
-- ซื้ออาวุธได้เมื่อ Coins เพียงพอและซื้อได้เพียงชิ้นเดียว
-- Boss เริ่มด้วย HP 2,000 และใช้ Player HP ที่เหลือ
-- Damage ของผู้เล่นตรงกับอาวุธที่ซื้อ
-- Boss Phase เปลี่ยนตามช่วง HP ที่กำหนด
-- บอสหยุดโจมตีเมื่อจบการต่อสู้
-- กรณีเลือดหมดพร้อมกันตัดสินเป็น Player Lose
-- หน้า Win และ Lose แสดงข้อมูลสรุปครบ
-- ทุก asset path ใช้งานได้จริง
-- ตรวจสอบการแสดงผลทั้ง desktop และ mobile
+กฎการเพิ่มไฟล์:
 
-## แนวทางการทำงานร่วมกัน
+1. Feature UI → `src/components/`
+2. UI ใช้ซ้ำ → `src/components/ui/`
+3. Logic ไม่มี JSX และใช้ซ้ำ → `src/hooks/`
+4. Shared state/action → `GameProvider`; animation state เฉพาะหน้าอยู่ใน component
+5. Flow constants → `src/constants/`
+6. Character/weapon/boss metadata → `src/mock-data/`
+7. รูป/เสียงแยกตามชนิดใน `src/assets/` และ import ผ่าน ES modules เพื่อให้ Vite hash/check path
+8. ห้ามสร้าง `components`, `hooks`, `context`, `mock-data` ซ้ำที่ root
+9. เปลี่ยน data contract ต้องแก้ producer, consumer และเอกสารพร้อมกัน
 
-- สมาชิกแต่ละคนพัฒนา feature ของตัวเองและทดสอบก่อนนำมารวมกับ App
-- ใช้ชื่อข้อมูลและความหมายของ field ให้ตรงกันทั้งโปรเจกต์
-- หากเปลี่ยน state หรือ data field ที่ feature อื่นใช้ ต้องแจ้งทีมก่อนรวมงาน
-- หลีกเลี่ยงการกำหนดค่ากติกาซ้ำหลายไฟล์ เพื่อป้องกันตัวเลขไม่ตรงกัน
-- ทดสอบทั้ง feature แยกและ flow ตั้งแต่ Start จนถึง Result หลังรวมงาน
+## Audio Map
+
+| Event | Asset |
+|---|---|
+| Global UI click | `ui-click.wav` |
+| Survival/Boss BGM | `survival-bgm.ogg` |
+| Collect coin / normal projectile | `coin-collect.wav` |
+| Hit obstacle | `obstacle-hit.wav` |
+| Survival complete / transform | `survival-win.ogg` |
+| Lose result | `game-over.ogg` |
+| Boss attack | `boss_toom.mp3` |
+| Neeti attack | `neeti-added.mp3` |
+
+## Manual Test Checklist
+
+1. เลือก character ทั้งห้าตัวและตรวจ idle/fly/result sprite
+2. ทดสอบ pointer, touch, Space, Arrow Up และ gravity
+3. ชน obstacle: -300 HP และ cooldown 900ms
+4. เก็บ rainbow coin: +20, สูงสุด 10 ครั้ง
+5. รอดครบ 60 วินาที: ไป Shop และ Coins ไม่เกิน 260
+6. ตรวจ hover, locked, single select และ fists fallback
+7. ตรวจ damage/projectile ของอาวุธทุกชิ้น
+8. ตรวจ Neeti helper, multi-projectile และเสียงเฉพาะ
+9. คลิกรัวใน Boss: auto attack ต้องยังทำงานพร้อมกัน
+10. ตรวจ threshold บอสที่ 1500, 1000, 500
+11. ตรวจ Win/Lose/final data/Start Over
+12. เปลี่ยน phase แล้วต้องไม่มี interval, timeout, listener หรือเพลงเก่าค้าง
+
+## หมายเหตุ
+
+- `villian.js` สะกดตามชื่อไฟล์เดิม หาก rename ต้องแก้ import พร้อมกัน
+- Boss Fight ใช้ timing จาก `useBossPhase.js` จริง; metadata ใน `villian.js` ควร sync ก่อนนำไปใช้แทน
+- Shop ยังไม่หัก Coins หากเพิ่มระบบซื้อจริงควรเพิ่ม action ใน `GameProvider`
+- ไม่ควร commit `dist/` เว้นแต่ deployment workflow ต้องการ

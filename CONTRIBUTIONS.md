@@ -1,7 +1,31 @@
-| ลำดับ | ชื่อผู้ใช้ (GitHub username) | Feature ที่รับผิดชอบ | ไฟล์หลัก | งานที่ต้องพัฒนา |
-|---|---|---|---|---|
-| 1 | @inatbalthazr | Game Rules, Data Contract, Context และ App Structure | `src/App.jsx`, `src/mock-data/`, `src/context/` | กำหนด state contract กติกากลาง mock-data และโครงสร้าง App ร่วมกับคนที่ 3 เพื่อให้ทุก Feature เชื่อมต่อกันได้ |
-| 2 | @rin | Start Screen และ Character Select | `src/components/StartScreen.jsx`, `src/components/CharacterSelect.jsx` | พัฒนาหน้าเริ่มเกม หน้าเลือกตัวละคร การเลือกตัวละคร และการแสดงข้อมูลหรือ animation ของตัวละคร |
-| 3 | @ctrlaltnate | Flappy Survival, Coin System และ App Integration | `src/components/FlappyMinigame.jsx`, `src/hooks/`, `src/App.jsx` | พัฒนามินิเกม ระบบเหรียญ และเชื่อมทุก Feature ผ่าน App.jsx ร่วมกับคนที่ 1 ตั้งแต่ Start ถึง Result |
-| 4 | @kyden | Weapon Shop, Boss Fight และ Gameplay Assets | `src/components/WeaponShop.jsx`, `src/components/BossFight.jsx`, `src/hooks/useBossPhase.js`, `src/assets/villains/`, `src/assets/weapons/`, `src/assets/obstacles/` | พัฒนาร้านค้า การต่อสู้บอส Boss Phase และเตรียม asset ของบอส อาวุธ และ obstacle ร่วมกับคนที่ 5 |
-| 5 | @delta | Result Screen, Shared UI และ Asset Support | `src/components/ResultScreen.jsx`, `src/components/ui/`, `src/App.css`, `src/index.css`, `src/assets/ui/` | พัฒนาหน้าสรุปผล component กลาง styling และช่วยคนที่ 4 เตรียม ตรวจสอบ และเชื่อม asset ให้พร้อมใช้ในเกม |
+# Contributions Summary
+
+สรุป ownership และสถานะปัจจุบันหลัง integration รายละเอียดอยู่ใน `contributor.md`
+
+| # | GitHub | Feature | พื้นที่หลัก | ผลงานปัจจุบัน | สถานะ |
+|---:|---|---|---|---|---|
+| 1 | `@inatbalthazr` | Rules, Data Contract, Context, App Structure | `constants/`, `context/`, `mock-data/`, `App.jsx` | Phase contract, shared state/actions, reset flow, character/weapon/boss shape | Integrated |
+| 2 | `@rin` | Start, Character Select, Character Assets | `StartScreen.jsx`, `CharacterSelect.jsx`, `assets/characters/` | Start UI, single select, responsive character grid, descriptions และ sprites | Integrated |
+| 3 | `@ctrlaltnate` | Flappy, Coins, Audio, Integration | `FlappyMinigame.jsx`, `hooks/`, `App.jsx` | Physics/input/collision, timer, coin logic, sounds และ full phase wiring | Integrated |
+| 4 | `@kyden` | Shop, Boss, Gameplay Assets | `WeaponShop.jsx`, `BossFight.jsx`, `useBossPhase.js`, villain/weapon/obstacle assets | Selectable shop, projectiles, concurrent boss attack, phases และ gameplay sprites | Integrated |
+| 5 | `@delta` | Result, Shared UI, Styling, Asset Support | `ResultScreen.jsx`, `components/ui/`, CSS, `assets/ui/` | 8-bit Result, HealthBar, Coins, Timer, responsive blue visual system | Integrated |
+
+## Shared Work
+
+- สมาชิก 1 + 3: `App.jsx`, Context และ data contract
+- สมาชิก 3 + 4 + 5: gameplay integration, sounds และ asset presentation
+- สมาชิก 1 + 2 + 3: character data-to-sprite mapping
+- ทุกคน: lint, build และ manual full-flow test
+
+## Acceptance Snapshot
+
+- [x] START → SELECT → SURVIVAL → SHOP → BOSS → RESULT
+- [x] Context state และ clean restart
+- [x] Pointer/touch/keyboard Flappy controls
+- [x] Timer 60 วินาที, Coins cap 260
+- [x] Single-select Shop + locked state + fists
+- [x] Concurrent Boss/player attacks และ 4 attack stages
+- [x] Neeti helper, multi-projectile และ dedicated sound
+- [x] 8-bit Result พร้อม final Character/Weapon/Coins/HP
+- [x] Responsive shared UI
+- [x] Lint และ production build เป็นเกณฑ์ก่อน merge
