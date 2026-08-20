@@ -72,7 +72,7 @@ export default function CharacterSelect({
             <p className="mb-1 text-xl font-extrabold text-sky-950">
               [{selectedChar.name}]
             </p>
-            <p className="text-lg font-bold leading-relaxed text-sky-800">
+            <p className="text-[9px] font-bold leading-relaxed text-sky-800 sm:text-[10px]">
               {selectedChar.description}
             </p>
           </>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import bossPhaseTwo from '../assets/villains/Final/boss-phase2.png';
 import bossPhaseThree from '../assets/villains/Final/boss-phase3.png';
 import bossPhaseOne from '../assets/villains/v.idle.png';
+import neetiHelper from '../assets/characters/nitihelp.png';
 import battleBackground from '../assets/ui/bg_flappygame.jpeg';
 import bossAttackSound from '../assets/soundeffect/boss_toom.mp3';
 import neetiAttackSound from '../assets/soundeffect/neeti-added.mp3';
@@ -106,6 +107,13 @@ export default function BossFight({
 
       <div className="absolute bottom-[8%] left-[5%] z-20 flex h-[55%] w-[38%] items-end justify-center sm:left-[8%]">
         <img src={character?.images?.idle ?? character?.images?.fly} alt={character?.name ?? 'Player'} className="max-h-[50%] max-w-[50%] object-contain drop-shadow-[6px_6px_0_#0f172a]" />
+        {weapon.id === 'neeti-oni-san' && weapon.price === 150 && (
+          <img
+            src={neetiHelper}
+            alt="Neeti helper"
+            className="max-h-[48%] max-w-[58%] object-contain drop-shadow-[6px_6px_0_#0f172a]"
+          />
+        )}
         {showBoom && (
           <span className="absolute left-1/2 top-1/3 -translate-x-1/2 -rotate-12 border-4 border-black bg-amber-300 px-4 py-3 text-xl font-black text-black shadow-[5px_5px_0_#000] sm:text-3xl">BOOM!</span>
         )}
