@@ -33,7 +33,7 @@ export const weaponsData = [
     price: 150, 
     damage: 50, 
     icon: "/src/assets/weapons/p-niti.png",
-    description: "Highest Class weapon: Defeat the boss in 6 sec" 
+    description: "Highest Class weapon Defeat the boss in 6 sec" 
   },
 
 ];
