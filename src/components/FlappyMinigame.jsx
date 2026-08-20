@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import flappyGameBackground from '../assets/ui/bg_flappygame.jpeg';
 import goldCoin from '../assets/ui/gold_coin_spin_4_angles.gif';
 import coinCollectSound from '../assets/soundeffect/coin-collect.wav';
 import obstacleHitSound from '../assets/soundeffect/obstacle-hit.wav';
@@ -213,7 +214,8 @@ export default function FlappyMinigame() {
 
   return (
     <div
-      className="relative h-full w-full cursor-pointer overflow-hidden bg-gradient-to-b from-cyan-300 to-sky-500 text-left outline-none"
+      className="relative h-full w-full cursor-pointer overflow-hidden bg-cover bg-center bg-no-repeat text-left outline-none"
+      style={{ backgroundImage: `url(${flappyGameBackground})` }}
       onClick={jump}
       role="application"
       aria-label="พื้นที่เล่น Flappy Survival กดเพื่อกระโดด"

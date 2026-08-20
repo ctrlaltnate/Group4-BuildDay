@@ -15,3 +15,6 @@ Author: Zane Little Music
 Source: https://opengameart.org/content/flowerbed-fields-loop
 License: Creative Commons Zero (CC0)
 File used: flowerbed_fields.ogg -> survival-bgm.ogg
+
+Original project audio:
+- survival-win.ogg (generated chiptune victory jingle, 3.2 seconds)
