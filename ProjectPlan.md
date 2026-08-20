@@ -40,7 +40,7 @@
 | ไฟล์ | สถานะ | หน้าที่ปัจจุบัน | สิ่งที่ต้องทำต่อ |
 |---|---|---|---|
 | `src/main.jsx` | มีอยู่แล้ว | mount `App` เข้ากับ `index.html` | คงเป็น entry point และเพิ่ม provider เฉพาะเมื่อทีมจำเป็นต้องใช้ |
-| `src/App.jsx` | มีอยู่แล้ว แต่เป็น Vite starter | จุดรวม game state และตัวเชื่อมทุก Feature | คนที่ 3 ต้องแทนที่ starter ด้วย App integration, phase transition, shared state และ reset flow |
+| `src/App.jsx` | มีอยู่แล้ว แต่เป็น Vite starter | จุดรวม game state และตัวเชื่อมทุก Feature | คนที่ 1 วาง state contract และโครงสร้าง App ร่วมกับคนที่ 3 ซึ่งทำ App integration, phase transition, shared state และ reset flow |
 | `src/App.css` | มีอยู่แล้ว แต่เป็น Vite starter | style เฉพาะของ App template | คนที่ 5 ต้องปรับเป็น style ของเกมและรองรับ component จริง |
 | `src/index.css` | มีอยู่แล้ว แต่เป็น Vite starter | global variables, body และ style พื้นฐาน | คนที่ 5 ต้องกำหนด global theme, typography, layout และ responsive rules |
 
@@ -87,10 +87,10 @@
 | `src/assets/react.svg` | มีอยู่แล้ว | logo ตัวอย่างจาก Vite | ลบออกจาก UI เกมจริง |
 | `src/assets/vite.svg` | มีอยู่แล้ว | logo ตัวอย่างจาก Vite | ลบออกจาก UI เกมจริง |
 | `src/assets/characters/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพตัวละคร | คนที่ 2 เพิ่มภาพและตรวจ path ใน characters data |
-| `src/assets/villains/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพบอส | คนที่ 1 หรือ 4 เพิ่มภาพและเชื่อมกับ villain data |
-| `src/assets/weapons/` | มีโฟลเดอร์และ `.gitkeep` | เก็บ icon หรือภาพอาวุธ | คนที่ 1 และ 4 เพิ่มภาพและเชื่อมกับ weapons data |
-| `src/assets/obstacles/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพสิ่งกีดขวาง | คนที่ 3 เพิ่มภาพหรือใช้ CSS shape พร้อมตรวจ collision |
-| `src/assets/ui/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพเหรียญ พื้นหลัง และ UI | คนที่ 5 จัด asset ที่ใช้ร่วมกันและตรวจ responsive |
+| `src/assets/villains/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพบอสและสถานะการโจมตี | คนที่ 4 เตรียม gameplay asset และคนที่ 5 ช่วยตรวจ visual consistency, fallback และ path |
+| `src/assets/weapons/` | มีโฟลเดอร์และ `.gitkeep` | เก็บ icon หรือภาพอาวุธ | คนที่ 4 เตรียม asset สำหรับ Shop/Boss และคนที่ 5 ช่วยตรวจการแสดงผลและ path |
+| `src/assets/obstacles/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพสิ่งกีดขวาง | คนที่ 4 เตรียมร่วมกับคนที่ 5; คนที่ 3 ตรวจขนาดที่มีผลต่อ collision |
+| `src/assets/ui/` | มีโฟลเดอร์และ `.gitkeep` | เก็บภาพเหรียญ พื้นหลัง effect และ UI | คนที่ 5 เป็นเจ้าของและช่วยตรวจ asset gameplay ของคนที่ 4 |
 | `public/favicon.svg` | มีอยู่แล้ว | favicon | ใช้ต่อหรือเปลี่ยนให้เข้ากับเกม |
 | `public/icons.svg` | มีอยู่แล้ว | static icons จาก template | ใช้เฉพาะเมื่อจำเป็น หรือลบเมื่อไม่ใช้ |
 
@@ -98,12 +98,12 @@
 
 ลำดับงานที่ต้องทำจาก repository ปัจจุบัน:
 
-1. คนที่ 1 เติม mock-data และตัดสินการใช้ context
+1. คนที่ 1 เติม mock-data วาง App state contract และตัดสินการใช้ context ร่วมกับคนที่ 3
 2. คนที่ 2 ทำ Start Screen และ Character Select
-3. คนที่ 3 ทำ Flappy Survival, hooks และเป็น owner ของ App integration
-4. คนที่ 4 ทำ Weapon Shop, Boss Fight และ Boss Phase
-5. คนที่ 5 ทำ Result Screen, shared UI และ style ใหม่
-6. คนที่ 3 รวมทุก Feature เข้า App และตรวจ flow ตั้งแต่ Start ถึง Result
+3. คนที่ 3 ทำ Flappy Survival, hooks และ App integration ร่วมกับคนที่ 1
+4. คนที่ 4 ทำ Weapon Shop, Boss Fight, Boss Phase และ gameplay assets
+5. คนที่ 5 ทำ Result Screen, shared UI, style และช่วยคนที่ 4 เตรียม/ตรวจสอบ assets
+6. คนที่ 1 และคนที่ 3 รวมทุก Feature เข้า App และตรวจ flow ตั้งแต่ Start ถึง Result
 7. สมาชิกทุกคนตรวจ asset path, lint, build และ manual test flow
 
 ## 3. โครงสร้างไฟล์เป้าหมาย
@@ -293,7 +293,7 @@ Big Coin มี hard cap 10 ครั้ง แม้เวลา 60 วิน�
 
 ## 6. State Contract ของ App.jsx
 
-คนที่ 3 เป็นเจ้าของ state กลางและการเชื่อม Feature ทั้งหมดผ่าน `src/App.jsx`
+คนที่ 1 และคนที่ 3 ดูแล `src/App.jsx` ร่วมกัน โดยคนที่ 1 เป็นผู้กำหนด state contract และโครงสร้างข้อมูล ส่วนคนที่ 3 เป็นผู้เชื่อม Feature และควบคุม integration flow
 
 ข้อมูลที่ต้องบริหาร:
 
@@ -332,7 +332,7 @@ Big Coin มี hard cap 10 ครั้ง แม้เวลา 60 วิน�
 
 ### ขั้นที่ 1: เตรียมข้อมูลกลาง
 
-ผู้รับผิดชอบ: คนที่ 1
+ผู้รับผิดชอบ: คนที่ 1 ร่วมกับคนที่ 3
 
 - สรุปค่าคงที่ของเกมให้ตรงกับเอกสาร
 - เตรียมข้อมูลตัวละครใน `src/mock-data/characters.js`
@@ -340,13 +340,15 @@ Big Coin มี hard cap 10 ครั้ง แม้เวลา 60 วิน�
 - เตรียม `src/mock-data/weapons.js`
 - กำหนดชื่อ field ที่ทุก Feature จะใช้ร่วมกัน
 - ตรวจสอบ path ของ asset ที่จะนำมาใช้
+- วาง state contract และโครงสร้างข้อมูลที่ `src/App.jsx` ต้องใช้ร่วมกับคนที่ 3
 
 ### ขั้นที่ 2: วาง App State และ Game Flow
 
-ผู้รับผิดชอบ: คนที่ 3
+ผู้รับผิดชอบ: คนที่ 1 และคนที่ 3
 
 - เปลี่ยน Vite starter ใน `src/App.jsx` เป็นตัวควบคุมเกม
 - กำหนด game phase ทั้งหมด
+- คนที่ 1 กำหนด state contract และคนที่ 3 นำไปเชื่อมกับ event/callback จริง
 - กำหนด initial state และ reset state
 - เชื่อม callback ของทุก component
 - ควบคุมการเปลี่ยน phase ตั้งแต่ Start ถึง Result
@@ -420,17 +422,18 @@ Big Coin มี hard cap 10 ครั้ง แม้เวลา 60 วิน�
 
 | คน | Feature | ไฟล์หลัก | ผลลัพธ์ที่ต้องส่งมอบ |
 |---|---|---|---|
-| 1 | Game Rules, Data Contract และ Context | `src/mock-data/`, `src/context/` | mock-data ที่มี field ตรงกัน ค่ากติกากลาง และ context ที่จำเป็น |
+| 1 | Game Rules, Data Contract, Context และ App Structure | `src/App.jsx`, `src/mock-data/`, `src/context/` | mock-data, state contract, ค่ากติกากลาง และโครงสร้าง App ที่ทำร่วมกับคนที่ 3 |
 | 2 | Start Screen และ Character Select | `src/components/StartScreen.jsx`, `src/components/CharacterSelect.jsx` | หน้าจอเริ่มเกม เลือกตัวละคร และ callback ส่งข้อมูลกลับ App |
-| 3 | Flappy Survival, Coin System และ App Integration | `src/components/FlappyMinigame.jsx`, `src/hooks/`, `src/App.jsx` | มินิเกม ระบบเหรียญ timer และการเชื่อมทุก Feature ผ่าน App.jsx |
-| 4 | Weapon Shop และ Boss Fight | `src/components/WeaponShop.jsx`, `src/components/BossFight.jsx`, `src/hooks/useBossPhase.js` | ร้านค้า การซื้ออาวุธ การต่อสู้บอส และผลแพ้ชนะ |
-| 5 | Result Screen และ Shared UI | `src/components/ResultScreen.jsx`, `src/components/ui/`, `src/App.css`, `src/index.css` | หน้าผลลัพธ์ component กลาง และ responsive styling |
+| 3 | Flappy Survival, Coin System และ App Integration | `src/components/FlappyMinigame.jsx`, `src/hooks/`, `src/App.jsx` | มินิเกม ระบบเหรียญ timer และการเชื่อมทุก Feature ผ่าน App.jsx ร่วมกับคนที่ 1 |
+| 4 | Weapon Shop, Boss Fight และ Gameplay Assets | `src/components/WeaponShop.jsx`, `src/components/BossFight.jsx`, `src/hooks/useBossPhase.js`, `src/assets/villains/`, `src/assets/weapons/`, `src/assets/obstacles/` | ร้านค้า การต่อสู้บอส ผลแพ้ชนะ และ asset ของบอส อาวุธ และ obstacle |
+| 5 | Result Screen, Shared UI และ Asset Support | `src/components/ResultScreen.jsx`, `src/components/ui/`, `src/App.css`, `src/index.css`, `src/assets/ui/` | หน้าผลลัพธ์ component กลาง responsive styling และช่วยเตรียม/ตรวจสอบ asset ร่วมกับคนที่ 4 |
 
-### หน้าที่พิเศษของคนที่ 3: Integration Owner
+### หน้าที่ร่วมของคนที่ 1 และคนที่ 3: App Integration
 
-คนที่ 3 ไม่ได้ทำเฉพาะ Flappy Survival แต่เป็นผู้รับผิดชอบการเชื่อมระบบทั้งหมดผ่าน `src/App.jsx`
+คนที่ 1 และคนที่ 3 รับผิดชอบ `src/App.jsx` ร่วมกัน โดยแบ่งงานเป็น state/data contract กับการเชื่อม integration จริง
 
-- เป็น owner ของ `src/App.jsx`
+- คนที่ 1 วาง state contract, initial state, reset state และโครงสร้างข้อมูลของ `src/App.jsx`
+- คนที่ 3 เชื่อม phase, event, callback และการส่งข้อมูลระหว่างทุก Feature
 - กำหนดและดูแล game phase
 - รับข้อมูลจากทุก Feature และส่งต่อให้ Feature ถัดไป
 - เชื่อม Start Screen กับ Character Select

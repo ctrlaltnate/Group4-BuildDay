@@ -245,7 +245,7 @@ Phase 3 คือช่วงบอสคลั่ง จึงทำควา�
 | Weapon Shop | แสดงอาวุธ ตรวจ Coins ซื้อได้เพียง 1 ชิ้น และส่ง damage ไปบอส |
 | Boss Fight | จัดการการโจมตี Boss Phase การโจมตีอัตโนมัติ และผลแพ้ชนะ |
 | Result Screen | แสดงผลสรุปและเริ่มเกมใหม่ |
-| Result Screen และ Shared UI | พัฒนาหน้าสรุปผลชนะหรือแพ้ HealthBar, CoinDisplay, Timer และ component กลางที่ใช้ซ้ำในหลาย feature |
+| Result Screen, Shared UI และ Asset Support | พัฒนาหน้าสรุปผล HealthBar, CoinDisplay, Timer, styling และช่วยคนที่ 4 เตรียม/ตรวจสอบ asset |
 
 ## การจัดการ Side Effect และ Event
 

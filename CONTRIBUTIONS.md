@@ -1,7 +1,7 @@
 | ลำดับ | ชื่อผู้ใช้ (GitHub username) | Feature ที่รับผิดชอบ | ไฟล์หลัก | งานที่ต้องพัฒนา |
 |---|---|---|---|---|
-| 1 | @inatbalthazr | Game Flow และการเชื่อมต่อหน้าจอ | `src/App.jsx`, `src/context/` | พัฒนา state หลักของเกม การเปลี่ยน phase การส่งข้อมูลระหว่าง component และการเชื่อมทุก feature เข้ากับ App |
+| 1 | @inatbalthazr | Game Rules, Data Contract, Context และ App Structure | `src/App.jsx`, `src/mock-data/`, `src/context/` | กำหนด state contract กติกากลาง mock-data และโครงสร้าง App ร่วมกับคนที่ 3 เพื่อให้ทุก Feature เชื่อมต่อกันได้ |
 | 2 | @rin | Start Screen และ Character Select | `src/components/StartScreen.jsx`, `src/components/CharacterSelect.jsx` | พัฒนาหน้าเริ่มเกม หน้าเลือกตัวละคร การเลือกตัวละคร และการแสดงข้อมูลหรือ animation ของตัวละคร |
-| 3 | @ctrlaltnate | Flappy Survival และ Coin System | `src/components/FlappyMinigame.jsx`, `src/hooks/useGameTimer.js`, `src/hooks/useCoinSystem.js` | พัฒนาการกระโดด การหลบและชนสิ่งกีดขวาง ระบบจับเวลา 60 วินาที การลด HP และระบบ Passive/Active Coin |
-| 4 | @kyden | Weapon Shop และ Boss Fight | `src/components/WeaponShop.jsx`, `src/components/BossFight.jsx`, `src/hooks/useBossPhase.js` | พัฒนารายการอาวุธ การซื้ออาวุธ การโจมตีบอส Boss Phase การโจมตีอัตโนมัติ และเงื่อนไขแพ้ชนะ |
-| 5 | @delta | Result Screen และ Shared UI | `src/components/ResultScreen.jsx`, `src/components/ui/` | พัฒนาหน้าสรุปผลชนะหรือแพ้ component กลาง เช่น HealthBar, CoinDisplay และ Timer รวมถึงทำให้ UI ใช้ซ้ำได้ในหลาย feature |
+| 3 | @ctrlaltnate | Flappy Survival, Coin System และ App Integration | `src/components/FlappyMinigame.jsx`, `src/hooks/`, `src/App.jsx` | พัฒนามินิเกม ระบบเหรียญ และเชื่อมทุก Feature ผ่าน App.jsx ร่วมกับคนที่ 1 ตั้งแต่ Start ถึง Result |
+| 4 | @kyden | Weapon Shop, Boss Fight และ Gameplay Assets | `src/components/WeaponShop.jsx`, `src/components/BossFight.jsx`, `src/hooks/useBossPhase.js`, `src/assets/villains/`, `src/assets/weapons/`, `src/assets/obstacles/` | พัฒนาร้านค้า การต่อสู้บอส Boss Phase และเตรียม asset ของบอส อาวุธ และ obstacle ร่วมกับคนที่ 5 |
+| 5 | @delta | Result Screen, Shared UI และ Asset Support | `src/components/ResultScreen.jsx`, `src/components/ui/`, `src/App.css`, `src/index.css`, `src/assets/ui/` | พัฒนาหน้าสรุปผล component กลาง styling และช่วยคนที่ 4 เตรียม ตรวจสอบ และเชื่อม asset ให้พร้อมใช้ในเกม |
