@@ -1,39 +1,52 @@
-export const weaponsData = [
-    {
-    id: "weapon_1",
-    name: "HTML/CSS",
-    price: 60, 
-    damage: 10, 
-    icon: "/src/assets/weapons/html-css.png", 
-    description: "Fundamentals Weapons everyone needs to survive"
-  },
-
-   {
-    id: "weapon_2",
-    name: "MongoDB/Supabase",
-    price: 90, 
-    damage: 20, 
-    icon: "/src/assets/weapons/database.png", 
-    description: "Data Weapon defeat Boss with a ton of Data" 
-  },
-
-  
+export const weapons = [
   {
-    id: "weapon_3",
-    name: "react/tailwind",
-    price: 120, 
-    damage: 40, 
-    icon: "/src/assets/weapons/react-tailwind.png", 
-    description: "Modern Weapon attack with the components"
+    id: 'neeti-oni-san',
+    name: 'Neeti-oni-san',
+    price: 150,
+    damage: 50,
+    description: 'Legendary weapon of Sensei Neeti. Maximum power with 50 damage per click!',
+    img: '/src/assets/weapons/weapon.png'
   },
- 
   {
-    id: "weapon_4",
-    name: "P'Neeti",
-    price: 150, 
-    damage: 50, 
-    icon: "/src/assets/weapons/p-niti.png",
-    description: "Highest Class weapon Defeat the boss in 6 sec" 
+    id: 'react-tailwind',
+    name: 'React/Tailwind',
+    price: 120,
+    damage: 40,
+    description: 'React + Tailwind magic! 40 damange per click!',
+    img: '/src/assets/weapons/weapon.png'
   },
-
+  {
+    id: 'mongo-supabase',
+    name: 'MongoDB/Supabase',
+    price: 90,
+    damage: 20,
+    description: 'Cloud Database hammer dealing 20 damage per click!',
+    img: '/src/assets/weapons/weapon.png'
+  },
+  {
+    id: 'html-css',
+    name: 'HTML/CSS',
+    price: 60,
+    damage: 10,
+    description: 'Fundamental Web Designer weapon dealing 10 damage per click!',
+    img: '/src/assets/weapons/weapon.png'
+  }
 ];
+
+export const defaultWeapon = {
+    id: 'fists',
+    name: 'Fists (Bare Hands)',
+    price: 0,
+    damage: 5,
+    description: 'Punch the boss bare-handed dealing 5 damage per click!',
+    img: '/src/assets/weapons/weapon.png'
+};
+
+export const getWeaponById = (id) => {
+  if (!id) return null;
+  if (id === 'fists') return defaultWeapon;
+  return weapons.find(w => w.id === id || w.name === id) || null;
+};
+
+export const getAllWeapons = () => weapons;
+
