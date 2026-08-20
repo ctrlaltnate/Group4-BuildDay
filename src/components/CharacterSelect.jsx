@@ -6,74 +6,96 @@ export default function CharacterSelect({
 }) {
   const [selectedId, setSelectedId] = useState(null);
 
-  const selectedCharacter = characters.find((char) => char.id === selectedId);
+  const selectedChar = characters.find((c) => c.id === selectedId);
 
   const handleConfirm = () => {
-    if (selectedCharacter) {
-      onSelectCharacter(selectedCharacter);
+    if (selectedChar) {
+      onSelectCharacter(selectedChar);
     }
   };
 
   return (
-    <div className="flex flex-col items-center p-6 bg-slate-900 text-white rounded-xl shadow-2xl max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold text-yellow-400 mb-2">
-        SELECT YOUR HERO
-      </h2>
-      <p className="text-slate-400 mb-6 text-sm">
-        เลือกตัวละครที่จะพาคุณไปลุยกับบอส
-      </p>
+    <div className="flex flex-col items-center justify-between h-full w-full p-4 select-none font-mono bg-[#0f380f]/10">
+      {/* Title Bar */}
+      <div className="border-2 border-[#0f380f] bg-[#8bac0f] w-full max-w-sm py-2 px-4 text-center rounded shadow-[4px_4px_0px_0px_#0f380f]">
+        <h2 className="text-sm sm:text-base font-extrabold text-[#0f380f] tracking-wider uppercase">
+          SELECT YOUR HERO
+        </h2>
+      </div>
 
-      {/* แสดงการ์ดตัวละคร 5 ตัวในแถวเดียว (responsive) */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 w-full mb-6">
+      {/* Character Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 my-3 w-full max-w-sm overflow-y-auto max-h-[180px] p-1">
         {characters.map((char) => {
           const isSelected = char.id === selectedId;
+          const charImage = char.images?.idle || char.image;
+
           return (
             <div
               key={char.id}
               onClick={() => setSelectedId(char.id)}
-              className={`flex flex-col items-center p-3 rounded-xl border-2 cursor-pointer transition-all ${
+              className={`cursor-pointer border-2 p-2 rounded flex flex-col items-center justify-between transition-all ${
                 isSelected
-                  ? "border-yellow-400 bg-slate-800 scale-105 shadow-yellow-500/20 shadow-lg"
-                  : "border-slate-700 bg-slate-950 hover:border-slate-500"
+                  ? "border-[#0f380f] bg-[#8bac0f] scale-105 shadow-[3px_3px_0px_0px_#0f380f]"
+                  : "border-[#306230] bg-[#9bbc0f] hover:bg-[#8bac0f]/50 opacity-80 hover:opacity-100"
               }`}
             >
-              <div className="w-20 h-20 mb-2 flex items-center justify-center bg-slate-800 rounded-lg overflow-hidden">
-                <img
-                  src={
-                    char.images?.idle ||
-                    "/src/assets/characters/placeholder.png"
-                  }
-                  alt={char.name}
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    // หากยังไม่มีไฟล์รูป จะใส่รูปแทนกันพัง
-                    e.target.src =
-                      "https://via.placeholder.com/80?text=" + char.name;
-                  }}
-                />
+              <div className="w-10 h-10 flex items-center justify-center bg-[#9bbc0f] border border-[#0f380f] rounded p-1 mb-1">
+                {charImage ? (
+                  <img
+                    src={charImage}
+                    alt={char.name}
+                    className="w-full h-full object-contain pixelated"
+                    onError={(e) => {
+                      // Fallback เมื่อหาไฟล์รูปใน assets ไม่เจอ
+                      e.target.style.display = "none";
+                      e.target.nextSibling.style.display = "block";
+                    }}
+                  />
+                ) : null}
+                <span className="text-xs font-bold text-[#0f380f] hidden">
+                  🎮
+                </span>
               </div>
-              <h3 className="text-base font-bold text-white">{char.name}</h3>
-              <p className="text-[10px] text-slate-400 text-center mt-1 line-clamp-2">
-                {char.description}
-              </p>
+
+              <span className="text-[11px] font-black text-[#0f380f] text-center truncate w-full">
+                {char.name}
+              </span>
             </div>
           );
         })}
       </div>
 
-      {/* ปุ่มยืนยันการเลือก */}
+      {/* Description Display Box */}
+      <div className="w-full max-w-sm border-2 border-[#0f380f] bg-[#9bbc0f] p-2 rounded min-h-[60px] mb-2 flex flex-col justify-center">
+        {selectedChar ? (
+          <>
+            <p className="text-[11px] font-extrabold text-[#0f380f] mb-0.5">
+              [{selectedChar.name}]
+            </p>
+            <p className="text-[10px] text-[#306230] leading-tight font-bold">
+              {selectedChar.description}
+            </p>
+          </>
+        ) : (
+          <p className="text-[10px] text-[#306230] text-center italic font-bold">
+            Click on a character above to view their details.
+          </p>
+        )}
+      </div>
+
+      {/* Confirm Button */}
       <button
         onClick={handleConfirm}
         disabled={!selectedId}
-        className={`px-8 py-3 rounded-full font-bold text-lg transition-all ${
+        className={`w-full max-w-sm py-2.5 font-mono font-extrabold text-xs border-2 rounded transition-all ${
           selectedId
-            ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 cursor-pointer shadow-lg active:scale-95"
-            : "bg-slate-700 text-slate-500 cursor-not-allowed"
+            ? "bg-[#306230] hover:bg-[#0f380f] text-[#9bbc0f] border-[#0f380f] shadow-[3px_3px_0px_0px_#0f380f] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+            : "bg-gray-400 text-gray-200 border-gray-500 cursor-not-allowed opacity-60"
         }`}
       >
         {selectedId
-          ? `CONFIRM (${selectedCharacter?.name})`
-          : "SELECT A CHARACTER"}
+          ? `CONFIRM AS ${selectedChar?.name.toUpperCase()}`
+          : "CHOOSE A CHARACTER"}
       </button>
     </div>
   );
