@@ -3,8 +3,8 @@ export const bossData = {
   name: 'TossaKan',
   maxHp: 2000,
   model: {
-    idle: '/src/assets/villains/boss.png',
-    die: '/src/assets/villains/boss.png'
+    idle: '/src/assets/villains/boss_ok.png',
+    die: '/src/assets/villains/boss_xxx.png'
   },
   phases: [
     {
@@ -12,21 +12,18 @@ export const bossData = {
       hpMin: 1000,
       hpMax: 2000,
       damage: 5,
-      interval: 1000,
     },
     {
       phase: 2,
       hpMin: 500,
       hpMax: 999,
       damage: 10,
-      interval: 1000,
     },
     {
       phase: 3,
       hpMin: 0,
       hpMax: 499,
       damage: 10,
-      interval: 1000,
     }
   ]
 };
