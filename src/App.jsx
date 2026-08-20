@@ -3,6 +3,8 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import CoinDisplay from './components/ui/CoinDisplay'
+import ResultScreen from './components/ResultScreen'
 
 function App() {
   const [count, setCount] = useState(0)

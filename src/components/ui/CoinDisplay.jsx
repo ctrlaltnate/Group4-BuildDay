@@ -1,5 +1,5 @@
 import React from "react";
-import rainbow_coin_spin_4_angles_transparent from "./assets/รูปภาพของคุณ.png";
+import rainbow_coin_spin_4_angles_transparent from "./rainbow_coin_spin_4_angles_transparent.png";
 
 export default function CoinDisplay ({ coins }) {
     return (
