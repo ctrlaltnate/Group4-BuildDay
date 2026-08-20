@@ -1,0 +1,8 @@
+export const GAME_PHASES = Object.freeze({
+  START: 'START',
+  CHARACTER_SELECT: 'CHARACTER_SELECT',
+  SURVIVAL: 'SURVIVAL',
+  SHOP: 'SHOP',
+  BOSS: 'BOSS',
+  RESULT: 'RESULT',
+});
