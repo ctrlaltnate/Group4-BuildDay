@@ -1,3 +1,6 @@
+import { useEffect } from 'react';
+import gameOverSound from './assets/soundeffect/game-over.ogg';
+import survivalWinSound from './assets/soundeffect/survival-win.ogg';
 import FlappyMinigame from './components/FlappyMinigame.jsx';
 import CoinDisplay from './components/ui/CoinDisplay.jsx';
 import HealthBar from './components/ui/HealthBar.jsx';
@@ -5,6 +8,8 @@ import Timer from './components/ui/Timer.jsx';
 import { GAME_PHASES } from './constants/game.js';
 import GameProvider from './context/GameProvider.jsx';
 import useGame from './hooks/useGame.js';
+import useGlobalClickSound from './hooks/useGlobalClickSound.js';
+import useSoundEffect from './hooks/useSoundEffect.js';
 
 function PhasePanel({ title, description, actionLabel, onAction }) {
   return (
@@ -28,6 +33,16 @@ function PhasePanel({ title, description, actionLabel, onAction }) {
 }
 
 function GameScreen() {
+  useGlobalClickSound();
+  const playGameOverSound = useSoundEffect(gameOverSound, {
+    volume: 0.4,
+    poolSize: 1,
+  });
+  const playSurvivalWinSound = useSoundEffect(survivalWinSound, {
+    volume: 0.45,
+    poolSize: 1,
+  });
+
   const {
     phase,
     playerHp,
@@ -40,6 +55,18 @@ function GameScreen() {
     finishBoss,
     restartGame,
   } = useGame();
+
+  useEffect(() => {
+    if (phase === GAME_PHASES.RESULT && result?.status === 'LOSE') {
+      playGameOverSound();
+    }
+  }, [phase, playGameOverSound, result?.status]);
+
+  useEffect(() => {
+    if (phase === GAME_PHASES.SHOP && playerHp > 0) {
+      playSurvivalWinSound();
+    }
+  }, [phase, playSurvivalWinSound, playerHp]);
 
   const renderPhase = () => {
     switch (phase) {
@@ -100,7 +127,7 @@ function GameScreen() {
   return (
     <div className="min-h-screen bg-slate-950 sm:p-4">
       <div
-        className="mx-auto flex h-screen w-full max-w-[1000px] flex-col overflow-hidden border-4 border-black bg-sky-300 shadow-[0_0_0_4px_#64748b,8px_8px_0_4px_#000] sm:h-[calc(100vh-2rem)]"
+        className="mx-auto flex h-screen w-full max-w-[1200px] flex-col overflow-hidden border-4 border-black bg-sky-300 shadow-[0_0_0_4px_#64748b,8px_8px_0_4px_#000] sm:h-[calc(100vh-2rem)]"
         aria-label="Flappy Boss Survival game frame"
       >
         {/* 10%: HUD สำหรับ HP, Coin, Timer และสถานะอื่น ๆ */}
