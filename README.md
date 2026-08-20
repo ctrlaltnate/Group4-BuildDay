@@ -1,5 +1,7 @@
 # Flappy Boss Survival
 
+## [Play the Live Demo](https://group4-build-day.vercel.app/)
+
 เกม React สไตล์ 8-bit ที่รวมเกมบินหลบสิ่งกีดขวาง การสะสม Coins ร้านค้าอาวุธ และการต่อสู้กับบอสไว้ในรอบเดียว ผู้เล่นต้องเลือกตัวละคร เอาชีวิตรอด 60 วินาที เลือกอาวุธตาม Coins ที่มี และกำจัดบอสก่อน HP หมด
 
 เอกสารนี้อ้างอิงจาก implementation ปัจจุบันใน `src/` ไม่ใช่แผนเริ่มต้นใน `ProjectPlan.md`
