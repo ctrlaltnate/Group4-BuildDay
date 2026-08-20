@@ -6,6 +6,8 @@ export const characters = [
     skill: "",
     model: {
             idle: "/src/assets/characters/01.png",
+            fly: "/src/assets/characters/01.png",
+            win: "/src/assets/characters/01.png",
             die: "/src/assets/characters/01.png",
             }
     },
@@ -17,6 +19,8 @@ export const characters = [
     skill: "",
     model: {
             idle: "/src/assets/characters/01.png",
+            fly: "/src/assets/characters/01.png",
+            win: "/src/assets/characters/01.png",
             die: "/src/assets/characters/01.png",
             }
     },
@@ -28,6 +32,8 @@ export const characters = [
     skill: "",
     model: {
             idle: "/src/assets/characters/01.png",
+            fly: "/src/assets/characters/01.png",
+            win: "/src/assets/characters/01.png",
             die: "/src/assets/characters/01.png",
             }
     },
@@ -39,6 +45,8 @@ export const characters = [
     skill: "",
     model: {
             idle: "/src/assets/characters/01.png",
+            fly: "/src/assets/characters/01.png",
+            win: "/src/assets/characters/01.png",
             die: "/src/assets/characters/01.png",
             }
     },
@@ -50,6 +58,8 @@ export const characters = [
     skill: "",
     model: {
             idle: "/src/assets/characters/01.png",
+            fly: "/src/assets/characters/01.png",
+            win: "/src/assets/characters/01.png",
             die: "/src/assets/characters/01.png",
             }
     },
